@@ -14,7 +14,7 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:4000/local", {
+            const response = await axios.post("http://localhost:4000/users/login", {
                 identifier: email,
                 password: password,
             });
@@ -33,13 +33,13 @@ const Login = () => {
                 <Form onSubmit={handleSubmit} className = "formUsers"> 
                     <Form.Group classname="mb-3" controllId="email">
                         <Form.Label>Email</Form.Label>
-                        <Form.Control type="email" placeholder="insert your emil" value={email} onClick={(e) => setEmail(e.target.value)} />
+                        <Form.Control type="email" placeholder="insert your emil" value={email} onChange={(e) => setEmail(e.target.value)} />
                     </Form.Group>
                     <Form.Group classname="mb-3" controllId="password">
                         <Form.Label>Password</Form.Label>
-                        <Form.Control type="password" placeholder="insert your password" value={password} onClick={(e) => setPassword(e.target.value)} />
+                        <Form.Control type="password" placeholder="insert your password" value={password} onChange={(e) => setPassword(e.target.value)} />
                     </Form.Group>
-                    <Button variant="primary" type="submit" className="mt-3 aling-self-center">
+                    <Button variant="primary" type="submit" className="mt-3 aling-self-center" onClick={handleSubmit}>
                         Submit
                     </Button>
                     <p className="mt-3">Don't have an account? <a href="/register">Register</a></p>

@@ -24,7 +24,7 @@ router.get("/:Id", async (req, res) => {
 });
 
 //post
-router.post("/", async (req, res) => {
+router.post("/:Id", async (req, res) => {
     try {
     const {title , category , cover , description , readTime} = req.body;
     const newPost = new Posts({
