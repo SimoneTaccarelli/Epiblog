@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, Button, Card, Row, Col, Container } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Login from "./Login";
+import { useAuth } from "../contexts/AuthContext";
 
 const Register = () => {
     const [user, setUser] = useState({
@@ -13,6 +13,7 @@ const Register = () => {
     });
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,17 +26,14 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:4000/users/register", user);
-            console.log("User registered: " + user.firstName + " " + user.lastName + " " + user.email + " " + user.password);
+            const response = await axios.post("http://localhost:4000/users/register", user);
+            console.log("User registered: " + response.data.firstName + " " + response.data.lastName + " " + response.data.email);
+            login(response.data); // Usa i dati della risposta per il login
             navigate("/");
         } catch (error) {
             setError("Invalid email or password");
         }
     };
-
-    if(Login) {
-        <Home id={user.id} />
-    }
 
     return (
         <Container>

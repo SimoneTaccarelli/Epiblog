@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
 });
 
 //get single post
-router.get("/:Id", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const post = await Posts.findById(req.params.Id).populate("user", "firstname lastname");
     res.json(post);
@@ -24,18 +24,21 @@ router.get("/:Id", async (req, res) => {
 });
 
 //post
-router.post("/:Id", async (req, res) => {
+router.post("/", async (req, res) => {
     try {
-    const {title , category , cover , description , readTime} = req.body;
+    const {title , category , cover , description , readTime , author} = req.body;
     const newPost = new Posts({
     title,
     category,
     cover,
     description,
     readTime,
+    author
   });
-    await newPost.save();
-    res.json(newPost);
+    const savedpost = await newPost.save();
+
+    const populatePost= await Posts.findById(savedpost._id).populate("user", "firstname lastname");
+    res.status(201).json(populatePost);
   } catch (error) {
     res.json({ message: error });
   }

@@ -1,46 +1,33 @@
-import { Col, Container, Row } from "react-bootstrap";
-import SideBar from "../components/SideBar";
-import ModalNewPost from "../components/ModalNewPost";
-import {useState , useEffect} from "react";
-import axios from "axios";
+import {useState, useEffect} from 'react';
+import {Container, Row, Col} from 'react-bootstrap';
+import axios from 'axios';
+import ModalCreatePost from '../components/ModalCreatePost';
+import { useAuth } from '../contexts/AuthContext';
+import PostCard from '../components/PostCard';
 
+const Home = () => {
+    const [posts, setPosts] = useState([]);
+    const { user } = useAuth();
+    
 
+    useEffect(() => {
+        axios.get('http://localhost:4000/posts')
+            .then(response => setPosts(response.data))
+            .catch(error => console.error(error));
+    }, []);
 
-function Home({id}) {
-  const [posts, setPosts] = useState([]);
-
-  useEffect(() => {
-    axios.get("http://localhost:4000/posts")
-      .then((response) => {
-        setPosts(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-
-  return (
-    <>
-      <h1>Home</h1>
-      <Container>
-        <ModalNewPost id={id} />
-        <Row>
-          <h2>Posts</h2>
-          <Col xs={8}>
-            {posts.map((post) => (
-              <div key={post._id}>
-                <h2>{post.title}</h2>
-                <p>{post.description}</p>
-              </div>
-            ))}
-          </Col>
-        </Row>
-      </Container>
-      <Container>
-       <SideBar/> 
-      </Container>
-    </>
-  );
+    return (
+        <Container>
+            {user && <ModalCreatePost/>}
+            <Row>
+                {posts.map(post => (
+                    <Col key={post.id} md={4}>
+                        <PostCard post={posts} />
+                    </Col>
+                ))}
+            </Row>
+        </Container>
+    );
 }
 
 export default Home;

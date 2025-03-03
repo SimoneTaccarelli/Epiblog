@@ -4,6 +4,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
+
 function MyNavbar() {
   const { user, logout } = useAuth();
 
@@ -20,10 +21,14 @@ function MyNavbar() {
             >
             {user ? (
               <span className="navbar-text">
-                Welcome, {user.username}!{' '}
+                Welcome, {user.firstName}!{' '}
+                <Link to="/" className="btn btn-link">
+                  Home
+                </Link>
                 <Link to="/" onClick={logout} className="btn btn-link">
                   Logout
                 </Link>
+               
               </span>
             ) : (
               <Nav.Link href="/login">Login</Nav.Link>

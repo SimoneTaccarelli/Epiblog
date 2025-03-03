@@ -37,11 +37,11 @@ router.post("/register", async (req, res) => {
 });
 
 //post login
+
 router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email:
-      req.body.email
-    });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Email is wrong" });
     }
