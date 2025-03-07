@@ -1,0 +1,17 @@
+@baseUrl = http://localhost:4000
+
+###
+GET {{baseUrl}}/posts
+
+
+###
+PUT {{baseUrl}}/posts/67c5ce7cb6a26075abc674a6
+Content-Type: application/json
+
+{
+  "title": "New Title",
+  "category": "New Content"
+}
+
+###
+DELETE {{baseUrl}}/posts/67c5ce7cb6a26075abc674a6

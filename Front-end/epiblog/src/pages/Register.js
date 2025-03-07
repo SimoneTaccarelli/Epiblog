@@ -9,24 +9,36 @@ const Register = () => {
         firstName: "",
         lastName: "",
         email: "",
-        password: ""
+        password: "",
     });
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const { login } = useAuth();
+    const [profileimg, setProfileimg] = useState("");
+    const [previwprofileimg, setPreviwprofileimg] = useState("");
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setUser((prevUser) => ({
-            ...prevUser,
-            [name]: value
-        }));
+    const previw = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setProfileimg(file);
+            setPreviwprofileimg(URL.createObjectURL(file));
+        }
     };
+  
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const newUser = new FormData();
+        newUser.append("firstName", user.firstName);
+        newUser.append("lastName", user.lastName);
+        newUser.append("email", user.email);
+        newUser.append("password", user.password);
+        newUser.append("profilePic", profileimg);
+        
+
         try {
-            const response = await axios.post("http://localhost:4000/users/register", user);
+            const response = await axios.post("http://localhost:4000/users/register", newUser);
             console.log("User registered: " + response.data.firstName + " " + response.data.lastName + " " + response.data.email);
             login(response.data); // Usa i dati della risposta per il login
             navigate("/");
@@ -56,7 +68,7 @@ const Register = () => {
                                 placeholder="Insert your first name"
                                 name="firstName"
                                 value={user.firstName}
-                                onChange={handleChange}
+                                onChange={(e) => setUser((prevUser) => ({ ...prevUser, firstName: e.target.value }))}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="lastName">
@@ -66,7 +78,7 @@ const Register = () => {
                                 placeholder="Insert your last name"
                                 name="lastName"
                                 value={user.lastName}
-                                onChange={handleChange}
+                                onChange={(e) => setUser((prevUser) =>({ ...prevUser, lastName: e.target.value }))}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="email">
@@ -76,7 +88,7 @@ const Register = () => {
                                 placeholder="Insert your email"
                                 name="email"
                                 value={user.email}
-                                onChange={handleChange}
+                                onChange={(e) => setUser((prevUser) => ({ ...prevUser, email: e.target.value }))}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="password">
@@ -86,8 +98,23 @@ const Register = () => {
                                 placeholder="Insert your password"
                                 name="password"
                                 value={user.password}
-                                onChange={handleChange}
+                                onChange={(e) => setUser((prevUser) => ({ ...prevUser, password: e.target.value }))}
                             />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="profilePic">
+                            <Form.Label>Profile picture</Form.Label>
+                            <Form.Control
+                                type="file"
+                                accept="image/*"
+                                name="profilePic"
+                                onChange={previw}
+                            />
+                            {previwprofileimg &&
+                            <img 
+                            src={previwprofileimg}
+                            alt="Profile"  
+                            className='mt-2'
+                            style={{ width: "200px" }} />}
                         </Form.Group>
                         <Button variant="primary" type="submit" className="mt-3">
                             Submit

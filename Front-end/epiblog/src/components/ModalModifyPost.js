@@ -4,12 +4,8 @@ import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-// Definizione del componente ModalCreatePost
-function ModalCreatePost() {
-    // Stato per gestire la visibilità del modal
+function ModalModifyPost({ id }) {
     const [show, setShow] = useState(false);
-    
-    // Stato per gestire i dati del nuovo post
     const [post, setPost] = useState({
         title: "",
         category: "",
@@ -20,89 +16,66 @@ function ModalCreatePost() {
             unit: "minuti"
         }
     });
-   
-    // Stato per gestire l'immagine di copertina
-    const [coverImage, setCoverImage] = useState(null);
 
-    // Stato per gestire l'anteprima dell'immagine di copertina
-    const [previewImage, setPreviewImage] = useState('');
-
-    // Hook per ottenere le informazioni sull'utente autenticato
     const { user } = useAuth();
-    
-    // Stato per gestire eventuali errori
     const [error, setError] = useState("");
-    
-    // Hook per navigare tra le pagine
     const navigate = useNavigate();
 
-    // Funzione per chiudere il modal
     const handleClose = () => setShow(false);
-    
-    // Funzione per aprire il modal
-    const handleShow = () => setShow(true);
+    const handleShow = () => {
+        setShow(true);
+        fetchPostData(); // Recupera i dati del post quando il modale viene aperto
+    };
 
-    // Funzione per gestire il cambiamento dell'immagine di copertina
-    const handleImageChange = (e) => {
-        // Ottiene il file dell'immagine di copertina
-        const file = e.target.files[0];
-        if (file) {
-            setCoverImage(file); // Imposta il file dell'immagine di copertina
-            setPreviewImage(URL.createObjectURL(file)); // Imposta l'anteprima dell'immagine di copertina
+    const fetchPostData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:4000/posts/${id}`);
+            if (response && response.data) {
+                setPost(response.data);
+            }
+        } catch (error) {
+            console.error("Errore nel recupero dei dati del post:", error);
         }
     };
 
-    // Funzione per gestire l'invio del form
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Previene il comportamento predefinito del form
+        e.preventDefault();
         try {
-            // Controlla se l'utente è autenticato
             if (!user || !user._id) {
                 throw new Error("User not logged in");
             }
-            
-            // Crea un oggetto FormData per inviare i dati del post
-            const postdata = new FormData();
-            postdata.append("title", post.title);
-            postdata.append("category", post.category);
-            postdata.append("description", post.description);
-            postdata.append("readTime", JSON.stringify(post.readTime));
-            postdata.append("author", user._id);
-            postdata.append("cover", coverImage); // Aggiunge l'immagine di copertina al FormData
-            
-            // Invia una richiesta POST al server per creare un nuovo post
-            const response = await axios.post("http://localhost:4000/posts", postdata, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
+            const postdata = {
+                ...post,
+                author: user._id,
+                readTime: {
+                    ...post.readTime,
+                    value: parseInt(post.readTime.value)
                 }
-            });
+            };
+            console.log("dati da inviare : ", postdata);
+            const response = await axios.put(`http://localhost:4000/posts/${id}`, postdata);
             if (response && response.data) {
-                console.log("Post created: ", response.data);
-                navigate("/"); // Naviga alla pagina principale se l'operazione ha successo
-                handleClose(); // Chiude il modal
+                console.log("Post updated: ", response.data);
+                navigate("/");
+                handleClose();
             }
         } catch (error) {
-            setError(error.response?.data?.message || "errore creazione post"); // Gestisce eventuali errori
+            setError(error.response?.data?.message || "errore aggiornamento post");
         }
     };
 
     return (
         <>
-            {/* Pulsante per aprire il modal */}
             <Button variant="primary" onClick={handleShow}>
-                Add new post
+                Modify Post
             </Button>
 
-            {/* Modal per creare un nuovo post */}
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create Post</Modal.Title>
+                    <Modal.Title>Modify Post</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {/* Mostra il messaggio di errore se c'è un errore */}
                     {error && <Alert variant="danger">{error}</Alert>}
-                    
-                    {/* Form per inserire i dettagli del post */}
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-3" controlId="title">
                             <Form.Label>Title</Form.Label>
@@ -111,7 +84,7 @@ function ModalCreatePost() {
                                 placeholder="Insert title"
                                 name="title"
                                 value={post.title}
-                                onChange={(e) => setPost((formData) => ({ ...formData, title: e.target.value }))}
+                                onChange={(e) => setPost((prevPost) => ({ ...prevPost, title: e.target.value }))}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="category">
@@ -121,22 +94,18 @@ function ModalCreatePost() {
                                 placeholder="Insert category"
                                 name="category"
                                 value={post.category}
-                                onChange={(e) => setPost((formData) => ({ ...formData, category: e.target.value }))}
+                                onChange={(e) => setPost((prevPost) => ({ ...prevPost, category: e.target.value }))}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="cover">
                             <Form.Label>Cover</Form.Label>
                             <Form.Control
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
+                                type="text"
+                                placeholder="Insert cover"
+                                name="cover"
+                                value={post.cover}
+                                onChange={(e) => setPost((prevPost) => ({ ...prevPost, cover: e.target.value }))}
                             />
-                            {previewImage && 
-                            <img 
-                            src={previewImage} 
-                            alt="Cover" 
-                            className='mt-2'
-                            style={{ width: "200px" }} />}
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="description">
                             <Form.Label>Description</Form.Label>
@@ -145,7 +114,7 @@ function ModalCreatePost() {
                                 placeholder="Insert description"
                                 name="description"
                                 value={post.description}
-                                onChange={(e) => setPost((formData) => ({ ...formData, description: e.target.value }))}
+                                onChange={(e) => setPost((prevPost) => ({ ...prevPost, description: e.target.value }))}
                             />
                         </Form.Group>
                         <Row>
@@ -157,7 +126,7 @@ function ModalCreatePost() {
                                         placeholder="Insert read time value"
                                         name="readTimeValue"
                                         value={post.readTime.value}
-                                        onChange={(e) => setPost((formData) => ({ ...formData, readTime: { ...formData.readTime, value: e.target.value } }))}
+                                        onChange={(e) => setPost((prevPost) => ({ ...prevPost, readTime: { ...prevPost.readTime, value: e.target.value } }))}
                                     />
                                 </Form.Group>
                             </Col>
@@ -165,8 +134,9 @@ function ModalCreatePost() {
                                 <Form.Group className="mb-3" controlId="readTimeUnit">
                                     <Form.Label>Read time unit</Form.Label>
                                     <Form.Select
+                                        name="readTimeUnit"
                                         value={post.readTime.unit}
-                                        onChange={(e) => setPost((formData) => ({ ...formData, readTime: { ...formData.readTime, unit: e.target.value } }))}
+                                        onChange={(e) => setPost((prevPost) => ({ ...prevPost, readTime: { ...prevPost.readTime, unit: e.target.value } }))}
                                     >
                                         <option value="minuti">minuti</option>
                                         <option value="ore">ore</option>
@@ -187,4 +157,4 @@ function ModalCreatePost() {
     );
 }
 
-export default ModalCreatePost;
+export default ModalModifyPost;

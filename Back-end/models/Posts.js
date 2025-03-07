@@ -13,16 +13,15 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    content: {
-        type: String,
-        required: true,
+    description: {
+        type : String
     },
     readTime: {
-        Value : {
+        value : {
             type: Number,
             required: true,
         },
-        Unit : {
+        unit : {
             type: String,
             required: true,
         },},
