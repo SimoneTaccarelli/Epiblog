@@ -30,7 +30,6 @@ function MyProfile() {
         }
     };
 
-    useEffect(() => {
         if (user) {
             fetchPosts();
         }
