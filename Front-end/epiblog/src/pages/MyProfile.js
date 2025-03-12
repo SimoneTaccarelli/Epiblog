@@ -2,7 +2,7 @@ import { useAuth } from "../contexts/AuthContext";
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Card, Row, Container, Spinner, Alert } from "react-bootstrap";
-import ModifyImage from "../components/ModifyImageERR";
+import { Link } from 'react-router-dom';
 import '../Style/PP.css'; // Importa il file CSS
 
 function MyProfile() {
@@ -13,28 +13,34 @@ function MyProfile() {
 
     const defaultImg = `https://ui-avatars.com/api/?background=8c00ff&color=fff&name=${user?.firstName}+${user?.lastName}`;
 
-    const fetchPosts = async () => {
-        setLoading(true);
-        try {
-            const response = await axios.get(`http://localhost:4000/posts?author=${user._id}`);
-            if (Array.isArray(response.data)) {
-                setPosts(response.data);
-            } else {
-                setPosts([]);
+    useEffect(() => {
+        const fetchPosts = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get(`http://localhost:4000/posts?author=${user._id}`);
+                if (Array.isArray(response.data)) {
+                    setPosts(response.data);
+                } else {
+                    setPosts([]);
+                }
+                setLoading(false);
+            } catch (error) {
+                console.log(error);
+                setError("Error loading data");
+                setLoading(false);
             }
-            setLoading(false);
-        } catch (error) {
-            console.log(error);
-            setError("Error loading data");
-            setLoading(false);
-        }
-    };
+        };
 
         if (user) {
             fetchPosts();
         }
-        console.log('my profile', user);
     }, [user]);
+
+    useEffect(() => {
+
+        console.log("User:", user);
+        console.log("Posts:", posts);
+    }, [user, posts]);
 
     if (loading) {
         return (
@@ -64,23 +70,23 @@ function MyProfile() {
                         alt="profile"
                         style={{ width: "100px", height: "100px", borderRadius: "50%", objectFit: "cover" }}
                     />
-                    <div className="modPicUs">
-                        <ModifyImage />
-                    </div>
+                    <Link to='/ModifyUser' variant="primary" className="modPicUs">
+                        <i className="bi bi-pencil-square"></i>
+                    </Link>
                 </div>
                 <h2>{user?.firstName} {user?.lastName}</h2>
             </div>
             {Array.isArray(posts) && posts.map((post) => (
-                user._id === post.author._id && (
+                user._id === post.author?._id && (
                     <Card key={post._id} className="my-4">
                         <Row className="align-items-center">
                             <div className="col-auto">
                                 <Card.Img
-                                className="ms-3 my-3"
+                                    className="ms-3 my-3"
                                     variant="top"
                                     src={user.profilePic || defaultImg}
                                     alt="profile"
-                                    style={{ width: '40px', height: '40px', borderRadius: '50%',  objectFit: 'cover' }}
+                                    style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
                                 />
                             </div>
                             <div className="col">

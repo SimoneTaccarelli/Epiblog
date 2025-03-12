@@ -7,11 +7,11 @@ const router = e.Router();
 //get
 router.get("/", async (req, res) => {
   try {
-    const posts = await Posts.find().populate("author", "firstname lastname");//populate is used to get the user's name from the user collection
+    const posts = await Posts.find().populate("author", "firstName lastName profilePic");//populate is used to get the user's name from the user collection
 
     const filterAuthor = req.query.author ? posts.filter(post => post.author._id === req.query.author) : posts;
     
-    res.json(posts);
+    res.status(201).json(posts);
   } catch (error) {
     res.json({ message: error });
   }

@@ -66,7 +66,7 @@ function ModalModifyPost({ id }) {
 
     return (
         <>
-            <Button variant="primary" onClick={handleShow}>
+            <Button variant='link modifyPostBtn' onClick={handleShow}>
                 Modify Post
             </Button>
 

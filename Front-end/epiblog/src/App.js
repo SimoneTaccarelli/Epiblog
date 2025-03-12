@@ -7,6 +7,7 @@ import Register from './pages/Register.js';
 import { Container } from 'react-bootstrap';
 import Home from './pages/Home.js';
 import MyProfile from './pages/MyProfile.js';
+import ModifyUser from './pages/ModifyUser.js';
 
 
 
@@ -21,7 +22,8 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Home/>} />
-            <Route path='/:id'element={<MyProfile/>}/>
+            <Route path='/MyProfile'element={<MyProfile/>}/>
+            <Route path='/ModifyUser'element={<ModifyUser/>}/>
           </Routes>
         </Container>
       </Router>

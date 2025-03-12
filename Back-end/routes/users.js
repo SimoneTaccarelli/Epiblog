@@ -69,39 +69,70 @@ router.delete("/:userId", async (req, res) => {
 router.put('/:userId', upload.single('profilePic'), async (req, res) => {
   try {
     // Estrae i dati dal corpo della richiesta
-    const { firstName, lastName, email, currentPassword, newPassword } = req.body;
-    
-    // Trova l'utente nel database usando l'ID fornito nei parametri della richiesta
-    const user = await User.findById(req.params.userId);
-    
-    // Se l'utente non viene trovato, restituisce un errore 404
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    
-    // Se la password corrente è fornita e non corrisponde alla password dell'utente, restituisce un errore 400
-    if (currentPassword && user.password !== currentPassword) {
-      return res.status(400).json({ message: "Password is wrong" });
-    }
+    const { firstName, lastName, email } = req.body;
+
+    // Crea un oggetto con i dati da aggiornare
+    const updateData = { firstName, lastName, email };
+
+    // Estrae l'ID dell'utente dai parametri della richiesta
+    const { userId } = req.params;
 
     // Aggiorna solo i campi forniti
-    if (firstName) user.firstName = firstName;
-    if (lastName) user.lastName = lastName;
-    if (email) user.email = email;
-    if (newPassword) user.password = newPassword;
     if (req.file) {
-      user.profilePic = req.file.path;
+      updateData.profilePic = req.file.path;
     }
 
-    // Salva le modifiche nel database
-    await user.save();
-    
+    // Trova l'utente per ID e aggiorna i dati
+    const userUpdate = await User.findByIdAndUpdate(
+      userId,
+      updateData,
+      { new: true } // Restituisce il documento aggiornato
+    ).select("-password"); // Esclude il campo password dalla risposta
+
+    // Se l'utente non viene trovato, restituisce un errore 404
+    if (!userUpdate) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     // Restituisce l'utente aggiornato come risposta
-    res.status(200).json({ message: "User updated successfully", user });
+    res.status(200).json({ message: "User updated successfully", user: userUpdate });
   } catch (error) {
     // In caso di errore, restituisce un messaggio di errore
     res.status(400).json({ message: error.message });
   }
 });
+
+
+//update Password
+router.put('/:userID/password', async (req, res) => {
+
+  try {
+    const{oldPassword, newPassword} = req.body;
+
+    if(oldPassword === newPassword){
+      return res.status(400).json({message: "New password must be different from the old one"});
+    }
+
+    if(oldPassword ==! oldPassword){
+      return res.status(400).json({message: "Old password is wrong"});
+    }
+
+    const {id} = req.params;
+
+    const passwordUpdate = await User.findByIdAndUpdate(
+      id,
+      {password: newPassword},
+      {new: true}
+    );
+
+    if(!passwordUpdate){
+      return res.status(404).json({message: "User not found"});
+    }
+
+  
+  } catch (error) {
+    res.status(400).json({message: error.message});
+    
+  }});
 
 export default router;

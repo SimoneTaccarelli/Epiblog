@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 // Definizione del componente ModalCreatePost
-function ModalCreatePost() {
+function ModalCreatePost({updatePost}) {
     // Stato per gestire la visibilità del modal
     const [show, setShow] = useState(false);
     
@@ -60,7 +60,7 @@ function ModalCreatePost() {
             if (!user || !user._id) {
                 throw new Error("User not logged in");
             }
-            
+            updatePost(true);
             // Crea un oggetto FormData per inviare i dati del post
             const postdata = new FormData();
             postdata.append("title", post.title);
@@ -89,9 +89,12 @@ function ModalCreatePost() {
     return (
         <>
             {/* Pulsante per aprire il modal */}
-            <Button variant="primary" onClick={handleShow}>
+            <div 
+            onClick={handleShow} 
+            className="form-control text-muted d-flex align-items-center "
+            style={{ cursor: "pointer" }}>
                 Add new post
-            </Button>
+            </div>
 
             {/* Modal per creare un nuovo post */}
             <Modal show={show} onHide={handleClose}>

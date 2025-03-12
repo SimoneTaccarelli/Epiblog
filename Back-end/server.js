@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import userRouter from "./routes/users.js";
 import postRouter from "./routes/posts.js";
 import open from "open";
-
+import commentrouter from "./routes/comments.js";
 
 // configure dotenv
 dotenv.config();
@@ -32,8 +32,11 @@ mongoose.connection.on("error", (err) => {
 // create routes
 const router = express.Router();
 
+//use routes
 server.use("/users", userRouter);
 server.use("/posts", postRouter);
+server.use("/comments", commentrouter);
+
 
 // listen to server
 server.listen(4000, async () => {
