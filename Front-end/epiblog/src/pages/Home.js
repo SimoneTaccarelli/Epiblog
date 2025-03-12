@@ -6,9 +6,9 @@ import { useAuth } from '../contexts/AuthContext';
 import PostCard from '../components/PostCard';
 
 const Home = () => {
-    const [posts, setPosts] = useState([]); // Inizializza come array vuoto
+    const [posts, setPosts] = useState([]);
     const { user } = useAuth();
-    const [newPost,setNewPost] = useState(false);
+    const [refreshCounter, setRefreshCounter] = useState(0);
 
     useEffect(() => {
         axios.get('http://localhost:4000/posts')
@@ -20,23 +20,23 @@ const Home = () => {
                 }
             })
             .catch(error => console.error(error));
+    }, [refreshCounter]);
 
-            if(newPost){
-                setNewPost(false);
-            }
-    }, [newPost]);
-
-    const updatePost = () => {
-        setNewPost(true);
+    const refreshPosts = () => {
+        console.log("refreshPosts chiamata, incremento contatore");
+        setRefreshCounter(prev => {
+            console.log("Contatore incrementato da", prev, "a", prev + 1);
+            return prev + 1;
+        });
     };
 
     return (
         <Container>
-            {user && <ModalCreatePost updatePost={updatePost} />}
+            {user && <ModalCreatePost updatePost={refreshPosts} />}
             <div className='d-flex flex-column align-items-center'>
                 {Array.isArray(posts) && posts.map(post => (
                     <Col key={post._id} md={9} >
-                        <PostCard post={post} /> {/* Passa il singolo post */}
+                        <PostCard post={post} refreshPosts={refreshPosts} /> 
                     </Col>
                 ))}
             </div>

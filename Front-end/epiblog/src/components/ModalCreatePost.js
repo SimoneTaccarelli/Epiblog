@@ -5,10 +5,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 // Definizione del componente ModalCreatePost
-function ModalCreatePost({updatePost}) {
+function ModalCreatePost({ updatePost }) {
     // Stato per gestire la visibilità del modal
     const [show, setShow] = useState(false);
-    
+
     // Stato per gestire i dati del nuovo post
     const [post, setPost] = useState({
         title: "",
@@ -20,7 +20,7 @@ function ModalCreatePost({updatePost}) {
             unit: "minuti"
         }
     });
-   
+
     // Stato per gestire l'immagine di copertina
     const [coverImage, setCoverImage] = useState(null);
 
@@ -29,16 +29,16 @@ function ModalCreatePost({updatePost}) {
 
     // Hook per ottenere le informazioni sull'utente autenticato
     const { user } = useAuth();
-    
+
     // Stato per gestire eventuali errori
     const [error, setError] = useState("");
-    
+
     // Hook per navigare tra le pagine
     const navigate = useNavigate();
 
     // Funzione per chiudere il modal
     const handleClose = () => setShow(false);
-    
+
     // Funzione per aprire il modal
     const handleShow = () => setShow(true);
 
@@ -60,7 +60,7 @@ function ModalCreatePost({updatePost}) {
             if (!user || !user._id) {
                 throw new Error("User not logged in");
             }
-            updatePost(true);
+
             // Crea un oggetto FormData per inviare i dati del post
             const postdata = new FormData();
             postdata.append("title", post.title);
@@ -69,7 +69,7 @@ function ModalCreatePost({updatePost}) {
             postdata.append("readTime", JSON.stringify(post.readTime));
             postdata.append("author", user._id);
             postdata.append("cover", coverImage); // Aggiunge l'immagine di copertina al FormData
-            
+
             // Invia una richiesta POST al server per creare un nuovo post
             const response = await axios.post("http://localhost:4000/posts", postdata, {
                 headers: {
@@ -78,8 +78,12 @@ function ModalCreatePost({updatePost}) {
             });
             if (response && response.data) {
                 console.log("Post created: ", response.data);
-                navigate("/"); // Naviga alla pagina principale se l'operazione ha successo
+                // Aggiorna la lista dei post
+                updatePost();
                 handleClose(); // Chiude il modal
+
+               
+                navigate("/"); // Naviga alla pagina principale se l'operazione ha successo
             }
         } catch (error) {
             setError(error.response?.data?.message || "errore creazione post"); // Gestisce eventuali errori
@@ -89,10 +93,10 @@ function ModalCreatePost({updatePost}) {
     return (
         <>
             {/* Pulsante per aprire il modal */}
-            <div 
-            onClick={handleShow} 
-            className="form-control text-muted d-flex align-items-center "
-            style={{ cursor: "pointer" }}>
+            <div
+                onClick={handleShow}
+                className="form-control text-muted d-flex align-items-center "
+                style={{ cursor: "pointer" }}>
                 Add new post
             </div>
 
@@ -104,7 +108,7 @@ function ModalCreatePost({updatePost}) {
                 <Modal.Body>
                     {/* Mostra il messaggio di errore se c'è un errore */}
                     {error && <Alert variant="danger">{error}</Alert>}
-                    
+
                     {/* Form per inserire i dettagli del post */}
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-3" controlId="title">
@@ -134,12 +138,12 @@ function ModalCreatePost({updatePost}) {
                                 accept="image/*"
                                 onChange={handleImageChange}
                             />
-                            {previewImage && 
-                            <img 
-                            src={previewImage} 
-                            alt="Cover" 
-                            className='mt-2'
-                            style={{ width: "200px" }} />}
+                            {previewImage &&
+                                <img
+                                    src={previewImage}
+                                    alt="Cover"
+                                    className='mt-2'
+                                    style={{ width: "200px" }} />}
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="description">
                             <Form.Label>Description</Form.Label>

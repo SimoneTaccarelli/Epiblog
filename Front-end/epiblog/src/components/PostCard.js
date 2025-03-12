@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import ModalModifyPost from './ModalModifyPost';
 import AddComments from './AddComments';
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post , refreshPosts }) => {
     const { user } = useAuth();
 
     const defaultImg = `https://ui-avatars.com/api/?background=8c00ff&color=fff&name=${post.author?.firstName}+${post.author?.lastName}`;
@@ -15,7 +15,7 @@ const PostCard = ({ post }) => {
                 method: 'DELETE',
             });
             if (response.ok) {
-                alert('Post deleted');
+                refreshPosts()
             } else {
                 console.error('Failed to delete post');
             }
