@@ -1,7 +1,7 @@
 import { useAuth } from "../contexts/AuthContext";
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { Card, Row, Container, Spinner, Alert } from "react-bootstrap";
+import { Card, Row, Container, Spinner, Alert, Pagination, Col } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 import '../Style/PP.css'; // Importa il file CSS
 
@@ -10,34 +10,32 @@ function MyProfile() {
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    
     const defaultImg = `https://ui-avatars.com/api/?background=8c00ff&color=fff&name=${user?.firstName}+${user?.lastName}`;
 
     useEffect(() => {
         const fetchPosts = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:4000/posts?author=${user._id}`);
-                if (Array.isArray(response.data)) {
-                    setPosts(response.data);
-                } else {
-                    setPosts([]);
-                }
+                const response = await axios.get(`http://localhost:4000/posts?author=${user._id}&page=${currentPage}&limit=5`);
+                setTotalPages(response.data.total);
+                setPosts(response.data.posts);
                 setLoading(false);
             } catch (error) {
                 console.log(error);
                 setError("Error loading data");
                 setLoading(false);
             }
-        };
-
-        if (user) {
+        };      if (user) {
             fetchPosts();
         }
-    }, [user]);
+    }, [user,currentPage]);
+
+    
 
     useEffect(() => {
-
         console.log("User:", user);
         console.log("Posts:", posts);
     }, [user, posts]);
@@ -76,9 +74,10 @@ function MyProfile() {
                 </div>
                 <h2>{user?.firstName} {user?.lastName}</h2>
             </div>
+            <Col md={7} className='mt-4 allCard '>
             {Array.isArray(posts) && posts.map((post) => (
                 user._id === post.author?._id && (
-                    <Card key={post._id} className="my-4">
+                    <Card key={post._id} className="my-4 post-card">
                         <Row className="align-items-center">
                             <div className="col-auto">
                                 <Card.Img
@@ -93,7 +92,13 @@ function MyProfile() {
                                 <h5>{user.firstName} {user.lastName}</h5>
                             </div>
                         </Row>
-                        <Card.Img variant="top" src={post.cover} />
+                        <div
+                            className='post-cover'
+                            style={{
+                                backgroundImage: `url(${post.cover})`
+                            }}
+                        >
+                        </div>
                         <Card.Body>
                             <Card.Title>{post.title}</Card.Title>
                             <Card.Text>{post.category}</Card.Text>
@@ -103,6 +108,31 @@ function MyProfile() {
                     </Card>
                 )
             ))}
+            </Col>
+            {totalPages > 1 && (
+                <div className="d-flex justify-content-center mt-4">
+                    <Pagination className='d-flex justify-content-center mt-4'>
+                        <Pagination.Prev
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(prev => Math.min(prev - 1, 1))}
+                        />
+                        {[...Array(totalPages)].map((_, index) => (
+                            <Pagination.Item
+                                key={index + 1}
+                                active={index + 1 === currentPage}
+                                onClick={() => setCurrentPage(index + 1)}
+                            >
+                                {index + 1}
+                            </Pagination.Item>
+                        ))}
+                        <Pagination.Next
+                            disabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        />
+                    </Pagination>
+                </div>
+            )
+            }
         </Container>
     );
 }

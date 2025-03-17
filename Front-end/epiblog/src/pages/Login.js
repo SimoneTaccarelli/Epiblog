@@ -14,15 +14,20 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:4000/users/login", {
+            const response = await axios.post("http://localhost:4000/auth/login/local", {
                 email: email,
                 password: password,
             });
-            login(response.data);
+            const [ user , token ] = response.data;
+            login(user , token);
             navigate("/");
         } catch (error) {
             setError("Invalid email or password");
         }
+    };
+
+    const handleGoogleLogin = async () => {
+        window.location.href = "http://localhost:4000/auth/login/google";
     };
 
     return (
@@ -51,6 +56,13 @@ const Login = () => {
                         </Form.Group>
                         <Button variant="primary" type="submit" className="mt-3 align-self-center">
                             Submit
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={handleGoogleLogin}
+                            className="mt-3 align-self-center"
+                        >
+                            Login with Google
                         </Button>
                         <p className="mt-3">Don't have an account? <a href="/register">Register</a></p>
                         {error && <Card.Text style={{ color: "red" }}>{error}</Card.Text>}

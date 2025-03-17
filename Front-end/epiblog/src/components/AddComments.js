@@ -16,7 +16,6 @@ const AddComments = ({ postId }) => {
             const response = await axios.get(`http://localhost:4000/comments/post/${postId}`);
             if (Array.isArray(response.data)) {
                 setComments(response.data);
-                console.log("Commenti recuperati:", response.data); // Aggiungi questo log
             } else {
                 console.error('La risposta del server non è un array:', response.data);
             }

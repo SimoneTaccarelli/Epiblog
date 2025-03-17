@@ -26,7 +26,7 @@ const PostCard = ({ post , refreshPosts }) => {
 
     return (
         <>
-        <Card key={post._id} className="my-4 w-75">
+        <Card key={post._id} className="my-4 w-75 post-card">
             <Card.Header className="d-flex justify-content-between p-0">
                 <Row className="align-items-center">
                     <div className="col-auto">

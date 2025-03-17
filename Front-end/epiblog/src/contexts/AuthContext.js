@@ -4,28 +4,44 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
+    
     // Recupera l'utente memorizzato nel localStorage
     const storedUser = localStorage.getItem('user');
     console.log('storedUser', storedUser);
     // Restituisce l'utente se presente, altrimenti null
     return storedUser ? JSON.parse(storedUser) : null;
   });
+  // Aggiungi lo stato del token
+  const[token, setToken] = useState(() => {
+    // Recupera il token memorizzato nel localStorage
+    return localStorage.getItem('token');
+  });
 
   useEffect(() => {
+    // Aggiorna il localStorage con i dati dell'utente
     const storedUser = localStorage.getItem('user');
+
     if (storedUser) {
+      // Aggiorna lo stato user con i dati memorizzati
       setUser(JSON.parse(storedUser));
     }
     console.log('userCotext', user);
   }, []); // Dipendenza vuota per eseguire l'effetto solo una volta
 
-  const login = (userData) => {
+  // Aggiungi la funzione di login
+  const login = (userData , userToken) => {
+    // Imposta lo stato user con i dati dell'utente
     setUser(userData);
+    // Imposta lo stato token con il token
+    setToken(userToken);
+    localStorage.setItem('token', userToken);
     localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = () => {
     setUser(null);
+    setToken(null);
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
   };
 
@@ -46,7 +62,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, setUser, updateUser }}>
+    <AuthContext.Provider value={{ token, user, login, logout, setUser, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

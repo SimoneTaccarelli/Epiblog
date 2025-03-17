@@ -6,6 +6,9 @@ import userRouter from "./routes/users.js";
 import postRouter from "./routes/posts.js";
 import open from "open";
 import commentrouter from "./routes/comments.js";
+import session from "express-session";
+import passport from "./utilities/passport.js";
+import authRouter from "./routes/auth.js";
 
 // configure dotenv
 dotenv.config();
@@ -13,11 +16,25 @@ dotenv.config();
 // create server
 const server = express();
 
-// middleware
+
+
+// middleware di base
 server.use(express.json());
 server.use(cors());
-// connect to MongoDB
 
+// configurazione sessione
+server.use(session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: process.env.NODE_ENV === 'production' }
+}));
+
+// inizializzazione passport (dopo la sessione)
+server.use(passport.initialize());
+server.use(passport.session());
+
+// connect to MongoDB
 mongoose.connect(process.env.Mongo_URL, {});
 
 // check if connected to MongoDB
@@ -32,11 +49,11 @@ mongoose.connection.on("error", (err) => {
 // create routes
 const router = express.Router();
 
-//use routes
-server.use("/users", userRouter);
+// routes
+
 server.use("/posts", postRouter);
 server.use("/comments", commentrouter);
-
+server.use("/auth", authRouter);
 
 // listen to server
 server.listen(4000, async () => {

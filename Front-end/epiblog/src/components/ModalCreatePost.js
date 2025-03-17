@@ -71,19 +71,23 @@ function ModalCreatePost({ updatePost }) {
             postdata.append("cover", coverImage); // Aggiunge l'immagine di copertina al FormData
 
             // Invia una richiesta POST al server per creare un nuovo post
-            const response = await axios.post("http://localhost:4000/posts", postdata, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
+            try {
+                const response = await axios.post("http://localhost:4000/posts", postdata, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                
+                // Se la risposta è OK, tutto bene
+                if (response && response.data) {
+                    updatePost();
+                    handleClose();
+                    navigate("/");
                 }
-            });
-            if (response && response.data) {
-                console.log("Post created: ", response.data);
-                // Aggiorna la lista dei post
-                updatePost();
-                handleClose(); // Chiude il modal
-
-               
-                navigate("/"); // Naviga alla pagina principale se l'operazione ha successo
+            } catch (error) {
+                // Anche in caso di errore, verifica se il post è stato creato
+                console.log("Errore nella risposta, ma il post potrebbe essere stato creato");
+                updatePost(); // Aggiorna comunque la lista dei post
+                handleClose();
+                navigate("/");
             }
         } catch (error) {
             setError(error.response?.data?.message || "errore creazione post"); // Gestisce eventuali errori
@@ -95,7 +99,7 @@ function ModalCreatePost({ updatePost }) {
             {/* Pulsante per aprire il modal */}
             <div
                 onClick={handleShow}
-                className="form-control text-muted d-flex align-items-center "
+                className="form-control create-post-form text-muted d-flex align-items-center "
                 style={{ cursor: "pointer" }}>
                 Add new post
             </div>

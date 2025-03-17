@@ -38,9 +38,10 @@ const Register = () => {
         
 
         try {
-            const response = await axios.post("http://localhost:4000/users/register", newUser);
-            console.log("User registered: " + response.data.firstName + " " + response.data.lastName + " " + response.data.email);
-            login(response.data); // Usa i dati della risposta per il login
+            const response = await axios.post("http://localhost:4000/auth/register", newUser);
+            console.log("User registered: " + response.data.user.firstName);  // ✅ CORRETTO
+            const [user , token ] = response.data
+            login(user , token ); // Usa i dati della risposta per il login
             navigate("/");
         } catch (error) {
             setError("Invalid email or password");

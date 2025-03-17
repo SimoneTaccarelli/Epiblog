@@ -1,7 +1,8 @@
+/* form user */
 .formUsers {
     justify-items: center !important;
 }
-
+/* button card */
 .deletPostBtn {
     color: rgb(51, 49, 49);
     font-size: 13px;
@@ -26,13 +27,13 @@
     cursor: pointer;
     text-decoration: none;
 }
-
+/* input for create a post */
 .inputCreatPost{
     width: 100%;
     height: 100px;
     margin-bottom: 10px;
 }
-
+/* img  post */
 .post-cover{
     width: 100%;
     height: 350px;
@@ -42,7 +43,7 @@
     object-fit: cover;
     border-radius: 3px;
 }
-
+/* Comment Button */
 .deletCommBtn{
     color: rgb(51, 49, 49);
     font-size: 13px;
@@ -59,11 +60,11 @@
 .BtnAddComm{
     font-size: 10px;
 }
-
+/* Form comment */
 .comment-form {
     padding: 10px; 
     border: 1px solid #ccc; 
-    background-color: rgb(183, 177, 177);
+    background-color: rgb(221, 219, 219);
    border-radius: 0 0 5px 5px;
 }
 
@@ -74,6 +75,21 @@
 }
 
 .comment-section{
-    background-color: rgb(183, 177, 177);
+    background-color: rgb(221, 219, 219);
 
+}
+
+/* card post */
+.post-card{
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    background-color: rgb(242, 239, 234);
+    border: none;
+}
+
+.create-post-form{
+    width: 556px;
+    justify-self: center;
+    border: 0.5px solid #080707;
 }

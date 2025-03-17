@@ -8,6 +8,7 @@ import Image from 'react-bootstrap/Image';
 
 function MyNavbar() {
   const { user, logout } = useAuth();
+  console.log('userNav',user );
 
   const defaultImg = `https://ui-avatars.com/api/?background=8c00ff&color=fff&name=${user?.firstName}+${user?.lastName}`;
 
@@ -20,7 +21,7 @@ function MyNavbar() {
           <Nav className="me-auto my-2 my-lg-0" navbarScroll>
             <Link to="/" className="nav-link">Home</Link>
           </Nav>
-          {user ? (
+          {user  ? (
             <>
               <NavDropdown
                 className="ms-auto"
@@ -28,7 +29,7 @@ function MyNavbar() {
                 title={
                   <>
                     <Image
-                      src={user.profilePic || defaultImg}
+                      src={user?.profilePic || defaultImg}
                       alt="Avatar"
                       roundedCircle
                       style={{ objectFit: "cover" }}
@@ -36,7 +37,7 @@ function MyNavbar() {
                       height="30"
                       className="me-2"
                     />
-                    {"Welcome " + user.firstName + " " + user.lastName}
+                    {"Welcome " + user?.firstName + " " + user?.lastName}
                   </>
                 }
                 data-bs-theme="light"

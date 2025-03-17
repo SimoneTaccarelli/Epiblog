@@ -15,3 +15,22 @@ Content-Type: application/json
 
 ###
 DELETE {{baseUrl}}/posts/67c5ce7cb6a26075abc674a6
+
+
+###
+POST {{baseUrl}}/posts
+Content-Type: application/json
+
+{
+  "title": "New Title",
+  "category": "New Content",
+
+  "cover": "https://res.cloudinary.com/tuoaccount/image/upload/v1234567890/my-folder/abcdef123456.jpg",
+  "content": "New Content",
+  "readTime": {
+    "value": 2,
+    "unit": "minute"
+  },
+  "author": {: "67bdfef267545ac0cf75d2db"
+    }
+}

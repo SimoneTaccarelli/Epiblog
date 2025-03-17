@@ -34,6 +34,7 @@ router.post("/register", upload.single('profilePic'), async (req, res) => {
     await newUser.save();
     res.status(201).json(newUser);
   } catch (error) {
+    console.log("dettaglio errore",error);
     res.status(500).json({ message: error });
   }
 });
