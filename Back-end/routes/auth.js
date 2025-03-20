@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import User from '../models/Users.js';
 import upload from '../utilities/cloudinary.js';
+import mailer from '../helper/mailer.js';
 
 const router = express.Router();
 
@@ -43,19 +44,26 @@ router.post('/register', upload.single('profilePic'), async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        
+        // salvo l'utente nel database
         const newUser = new User({
             firstName,
             lastName,
             email,
             password: hashedPassword,
         });
-        
+        // Se è stata caricata un'immagine, la salvo nel database
         if (req.file) {
             newUser.profilePic = req.file.path;}
         
         await newUser.save();
-     
+        await mailer.sendMail({
+            from: 'simone-taccarelli@hotmail.it',
+            to: newUser.email,
+            subject: "Welcome to Epiblog",
+            text: "You have successfully registered to Epiblog",
+            html: `<h1>Welcome to Epiblog ${newUser.firstName} </h1>`,
+        });
+            // Invio solo i dati necessari al front-end
         const userToSend = {
             _id: newUser._id,
             firstName: newUser.firstName,
@@ -63,8 +71,10 @@ router.post('/register', upload.single('profilePic'), async (req, res) => {
             email: newUser.email,
             role: newUser.role,
         }
+        // se è stata caricata un'immagine, la invio al front-end
         if (req.file) {
             userToSend.profilePic = newUser.profilePic;}
+
         const token = generateToken(newUser);
         res.status(201).json({ user: userToSend, token });
     } catch (error) {
@@ -80,11 +90,106 @@ router.get('/login/google-callback', passport.authenticate('google', {
 }), (req, res) => {
     try {
         const token = generateToken(req.user);
-        res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
+        res.redirect(`${process.env.FRONTEND_URL}/login?token=${token}`);
+
     } catch (error) {
         console.error('Errore nel generare token:', error);
         res.redirect(`${process.env.FRONTEND_URL}/login?error=token_generation_failed`);
     }
 });
+
+//end point me
+router.get('/me', async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if(!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ message: 'Token is missing' });
+        }
+
+        const token = authHeader.split(' ')[1];
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const user = await User.findById(decoded.id).select('-password');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(user); 
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }       
+}
+);
+
+//update
+router.put('/:userId', upload.single('profilePic'), async (req, res) => {
+  try {
+    // Estrae i dati dal corpo della richiesta
+    const { firstName, lastName, email } = req.body;
+
+    // Crea un oggetto con i dati da aggiornare
+    const updateData = { firstName, lastName, email };
+
+    // Estrae l'ID dell'utente dai parametri della richiesta
+    const { userId } = req.params;
+
+    // Aggiorna solo i campi forniti
+    if (req.file) {
+      updateData.profilePic = req.file.path;
+    }
+
+    // Trova l'utente per ID e aggiorna i dati
+    const userUpdate = await User.findByIdAndUpdate(
+      userId,
+      updateData,
+      { new: true } // Restituisce il documento aggiornato
+    ).select("-password"); // Esclude il campo password dalla risposta
+
+    // Se l'utente non viene trovato, restituisce un errore 404
+    if (!userUpdate) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Restituisce l'utente aggiornato come risposta
+    res.status(200).json({ message: "User updated successfully", user: userUpdate });
+  } catch (error) {
+    // In caso di errore, restituisce un messaggio di errore
+    res.status(400).json({ message: error.message });
+  }
+});
+
+
+//update Password
+router.put('/:userID/password', async (req, res) => {
+
+  try {
+    const{oldPassword, newPassword} = req.body;
+
+    if(oldPassword === newPassword){
+      return res.status(400).json({message: "New password must be different from the old one"});
+    }
+
+    if(oldPassword ==! oldPassword){
+      return res.status(400).json({message: "Old password is wrong"});
+    }
+
+    const {id} = req.params;
+
+    const passwordUpdate = await User.findByIdAndUpdate(
+      id,
+      {password: newPassword},
+      {new: true}
+    );
+
+    if(!passwordUpdate){
+      return res.status(404).json({message: "User not found"});
+    }
+
+  
+  } catch (error) {
+    res.status(400).json({message: error.message});
+    
+  }});
+
 
 export default router;

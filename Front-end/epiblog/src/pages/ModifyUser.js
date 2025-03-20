@@ -3,7 +3,9 @@ import Spinner from 'react-bootstrap/Spinner';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { Container, Form, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import MyProfile from './MyProfile';
 
 function ModifyUser() {
     const { user, updateUser } = useAuth();
@@ -11,6 +13,7 @@ function ModifyUser() {
     const [coverImage, setCoverImage] = useState(null);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     // Stato per gestire i dati dell'utente da modificare
     const [modifyUser, setModifyUser] = useState({
@@ -54,7 +57,7 @@ function ModifyUser() {
 
         setLoading(true);
         try {
-            const response = await axios.put(`http://localhost:4000/users/${user._id}`, newInfoUser, {
+            const response = await axios.put(`http://localhost:4000/auth/${user._id}`, newInfoUser, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -63,6 +66,8 @@ function ModifyUser() {
             updateUser(response.data); // Aggiorna i dati dell'utente con i nuovi valori
 
             setLoading(false);
+            navigate('/MyProfile');
+
         } catch (error) {
             console.error("Error updating profile:", error);
             setError(error.response?.data?.message || "Error updating profile");

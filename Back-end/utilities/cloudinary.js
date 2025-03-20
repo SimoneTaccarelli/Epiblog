@@ -6,10 +6,6 @@ import dotenv from 'dotenv';
 // Configura dotenv
 dotenv.config();
 
-// Log delle variabili d'ambiente per il debug
-console.log('CLOUDINARY_NAME:', process.env.CLOUDINARY_NAME);
-console.log('CLOUDINARY_API_KEY:', process.env.CLOUDINARY_API_KEY);
-console.log('CLOUDINARY_API_SECRET:', process.env.CLOUDINARY_API_SECRET);
 
 // Configura Cloudinary
 cloudinary.config({
