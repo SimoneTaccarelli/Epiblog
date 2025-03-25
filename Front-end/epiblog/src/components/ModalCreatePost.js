@@ -3,6 +3,7 @@ import { Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config/config';
 
 // Definizione del componente ModalCreatePost
 function ModalCreatePost({ updatePost }) {
@@ -72,7 +73,7 @@ function ModalCreatePost({ updatePost }) {
 
             // Invia una richiesta POST al server per creare un nuovo post
             try {
-                const response = await axios.post("http://localhost:4000/posts", postdata, {
+                const response = await axios.post(`${API_URL}/posts`, postdata, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
                 

@@ -93,3 +93,45 @@
     justify-self: center;
     border: 0.5px solid #080707;
 }
+
+.settingButton {
+    color: rgb(51, 49, 49);
+    font-size: 13px;
+    text-decoration: none;
+    padding: 0px;
+    background-color: transparent;
+}
+
+.AddFriendBtn{
+    color: rgb(51, 49, 49);
+    font-size: 11px;
+    text-decoration: none;
+    padding: 6px;
+    background-color: transparent;
+    margin-left: 155px;
+    border-radius: 9%;
+    border: 1px solid rgb(171, 170, 170);
+}
+
+.AddFriendBtn:hover {
+    background-color: rgb(216, 216, 216);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.link-postDetails{
+    color: rgb(51, 49, 49);
+    font-size: 18px;
+    text-decoration: none;
+    padding: 0px;
+    background-color: transparent;
+    font-weight: bold;
+}
+
+.login-btn{
+    color: rgb(51, 49, 49);
+    font-size: 17px;
+    text-decoration: none;
+    padding: 0px;
+    background-color: transparent;
+}

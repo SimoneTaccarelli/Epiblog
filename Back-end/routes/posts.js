@@ -98,4 +98,14 @@ router.put("/:postId", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+//post details
+router.get("/details/:postId", async (req, res) => {
+  try {
+    const post = await Posts.findById(req.params.postId).populate("author", "firstName lastName profilePic");
+    res.json(post);
+  } catch (error) {
+    res.json({ message: error });
+  }
+});
 export default router;

@@ -58,5 +58,5 @@ server.use("/auth", authRouter);
 // listen to server
 server.listen(4000, async () => {
     console.log("Server is running on port 4000");
-    await open ("http://localhost:4000");
+    await open (`${process.env.BACKEND_URL}`);
 });

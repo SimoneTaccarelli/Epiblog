@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { useState ,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Form, Button, Card, Row, Col, Container } from "react-bootstrap";
 import axios from "axios";
+import { API_URL } from "../config/config";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -14,31 +15,31 @@ const Login = () => {
     // Ottieni il token dall'URL UNA VOLTA sola
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
-    
+
     // Aggiungi log per debug
     console.log("Componente Login renderizzato, token:", token);
-    
+
     useEffect(() => {
         console.log("useEffect eseguito, token:", token);
-        
+
         if (token) {
             const loginWithToken = async () => {
                 try {
                     console.log("Inizio loginWithToken con token:", token);
-                    
-                    const response = await axios.get("http://localhost:4000/auth/me", {
-                        headers: { 
-                            Authorization:`Bearer ${token}`
+
+                    const response = await axios.get(`${API_URL}/auth/me`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
                         }
                     });
-                    
+
                     console.log("Risposta completa:", response);
-                    
+
                     if (response.data) {
                         // Correzione: passa direttamente response.data
                         login(response.data, token);
                         navigate("/");
-                        
+
                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
                 } catch (error) {
@@ -46,7 +47,7 @@ const Login = () => {
                     setError("Impossibile recuperare i dati utente");
                 }
             };
-            
+
             loginWithToken();
         }
     }, [token, login, navigate]); // Aggiungi token alle dipendenze
@@ -54,12 +55,12 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:4000/auth/login/local", {
+            const response = await axios.post(`${API_URL}/auth/login/local`, {
                 email: email,
                 password: password,
             });
-            const { user , token } = response.data;
-            login(user , token);
+            const { user, token } = response.data;
+            login(user, token);
             navigate("/");
         } catch (error) {
             setError("Invalid email or password");
@@ -67,8 +68,8 @@ const Login = () => {
     };
 
     const handleGoogleLogin = async () => {
-        window.location.href = "http://localhost:4000/auth/login/google";
-        
+        window.location.href = `${API_URL}/auth/login/google`;
+
     };
 
     return (
@@ -95,16 +96,18 @@ const Login = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </Form.Group>
-                        <Button variant="primary" type="submit" className="mt-3 align-self-center">
-                            Submit
-                        </Button>
-                        <Button
-                            variant="primary"
-                            onClick={handleGoogleLogin}
-                            className="mt-3 align-self-center"
-                        >
-                            Login with Google
-                        </Button>
+                        <div className="d-flex flex-column">
+                            <Button variant="primary" type="submit" className="mt-3 align-self-center">
+                                Submit
+                            </Button>
+                            <Button
+                                variant="primary"
+                                onClick={handleGoogleLogin}
+                                className="mt-3 align-self-center"
+                            >
+                                Login with Google
+                            </Button>
+                        </div>
                         <p className="mt-3">Don't have an account? <a href="/register">Register</a></p>
                         {error && <Card.Text style={{ color: "red" }}>{error}</Card.Text>}
                     </Form>

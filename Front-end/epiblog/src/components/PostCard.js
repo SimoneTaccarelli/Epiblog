@@ -3,6 +3,8 @@ import { Button, Card, Row } from "react-bootstrap";
 import { useAuth } from '../contexts/AuthContext';
 import ModalModifyPost from './ModalModifyPost';
 import AddComments from './AddComments';
+import { Link } from 'react-router-dom';
+import { API_URL } from '../config/config';
 
 const PostCard = ({ post , refreshPosts }) => {
     const { user } = useAuth();
@@ -11,7 +13,7 @@ const PostCard = ({ post , refreshPosts }) => {
 
     const deletePost = async () => {
         try {
-            const response = await fetch(`http://localhost:4000/posts/${post._id}`, {
+            const response = await fetch(`${API_URL}/posts/${post._id}`, {
                 method: 'DELETE',
             });
             if (response.ok) {
@@ -23,6 +25,7 @@ const PostCard = ({ post , refreshPosts }) => {
             console.error(error);
         }
     };
+    
 
     return (
         <>
@@ -44,7 +47,7 @@ const PostCard = ({ post , refreshPosts }) => {
                 </Row>
             </Card.Header>
 
-            <Card.Title className='my-3 mx-3'>{post.title}</Card.Title>
+            <Link  to={`/post/${post._id}`}  className='link-postDetails my-3 mx-3'>{post.title}</Link>
             <div
                 className='post-cover'
                 style={{

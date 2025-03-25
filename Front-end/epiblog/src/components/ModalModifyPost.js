@@ -3,6 +3,7 @@ import { Button, Modal, Form, Row, Col, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config/config';
 
 function ModalModifyPost({ id }) {
     const [show, setShow] = useState(false);
@@ -29,7 +30,7 @@ function ModalModifyPost({ id }) {
 
     const fetchPostData = async () => {
         try {
-            const response = await axios.get(`http://localhost:4000/posts/${id}`);
+            const response = await axios.get(`${API_URL}/posts/${id}`);
             if (response && response.data) {
                 setPost(response.data);
             }
@@ -52,8 +53,7 @@ function ModalModifyPost({ id }) {
                     value: parseInt(post.readTime.value)
                 }
             };
-            console.log("dati da inviare : ", postdata);
-            const response = await axios.put(`http://localhost:4000/posts/${id}`, postdata);
+            const response = await axios.put(`${API_URL}/posts/${id}`, postdata);
             if (response && response.data) {
                 console.log("Post updated: ", response.data);
                 navigate("/");

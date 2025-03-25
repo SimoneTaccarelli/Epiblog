@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, Row, Container, Spinner, Alert, Pagination, Col } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 import '../Style/PP.css'; // Importa il file CSS
+import AddComments from "../components/AddComments";
 
 function MyProfile() {
     const { user } = useAuth();
@@ -74,10 +75,11 @@ function MyProfile() {
                 </div>
                 <h2>{user?.firstName} {user?.lastName}</h2>
             </div>
+            <div className="d-flex flex-column align-items-center">
             <Col md={7} className='mt-4 allCard '>
             {Array.isArray(posts) && posts.map((post) => (
                 user._id === post.author?._id && (
-                    <Card key={post._id} className="my-4 post-card">
+                    <Card key={post._id} className="my-4 w-75 post-card">
                         <Row className="align-items-center">
                             <div className="col-auto">
                                 <Card.Img
@@ -101,14 +103,16 @@ function MyProfile() {
                         </div>
                         <Card.Body>
                             <Card.Title>{post.title}</Card.Title>
-                            <Card.Text>{post.category}</Card.Text>
+                            <Card.Text className="badge bg-secondary me-2">{post.category}</Card.Text>
                             <Card.Text>{post.description}</Card.Text>
                             <Card.Text>{post.readTime.value} {post.readTime.unit}</Card.Text>
                         </Card.Body>
+                        <AddComments postId={post._id} />
                     </Card>
                 )
             ))}
             </Col>
+            </div>
             {totalPages > 1 && (
                 <div className="d-flex justify-content-center mt-4">
                     <Pagination className='d-flex justify-content-center mt-4'>

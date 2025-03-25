@@ -1,17 +1,19 @@
 import { useAuth } from "../contexts/AuthContext";
 import { Row, Button, Card } from "react-bootstrap";
 import axios from "axios";
+import { API_URL } from "../config/config";
 
 const Comments = ({ comments, reciveDeleteId }) => {
     const { user } = useAuth();
 
+ const defaultImg = `https://ui-avatars.com/api/?background=8c00ff&color=fff&name=${user?.firstName}+${user?.lastName}`;
     const deleteComment = async (commentId) => {
         try {
             if (user && user._id=== comments.find(comment => comment._id === commentId).author._id) {
                 reciveDeleteId(true);
                 
                 // Poi elimina il commento
-                await axios.delete(`http://localhost:4000/comments/${commentId}`, {
+                await axios.delete(`${API_URL}/comments/${commentId}`, {
                     data: { author: user._id }
                 });
                 
@@ -32,7 +34,7 @@ const Comments = ({ comments, reciveDeleteId }) => {
                         <div className="d-flex justify-content-between my-1 mx-2">
                             <div>
                                 <img
-                                    src={comment.author?.profilePic || 'default-profile-pic-url'}
+                                    src={comment.author?.profilePic ||  defaultImg}
                                     alt="profile"
                                     style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }}
                                 />

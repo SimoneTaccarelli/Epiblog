@@ -26,7 +26,9 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:4000/users/10
+DELETE http://localhost:4000/auth/67d5db4130db90f48df49ddd
 
 ###
 
+//modify psw
+###

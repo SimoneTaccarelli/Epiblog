@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Container, Col, Pagination } from 'react-bootstrap';
+import { Container, Col, Pagination, Row } from 'react-bootstrap';
 import axios from 'axios';
 import ModalCreatePost from '../components/ModalCreatePost';
 import { useAuth } from '../contexts/AuthContext';
 import PostCard from '../components/PostCard';
+import SuggestedUsers from '../components/SuggestedUsers';
+import { API_URL } from '../config/config';  
 
 const Home = () => {
     const [posts, setPosts] = useState([]);
@@ -13,7 +15,7 @@ const Home = () => {
     const [totalPages, setTotalPages] = useState(0);
 
     useEffect(() => {
-        axios.get(`http://localhost:4000/posts?page=${currentPage}&limit=5`)
+        axios.get(`${API_URL}/posts?page=${currentPage}&limit=5`)
             .then(response => {
                 setTotalPages(response.data.total);
                 setPosts(response.data.posts);
@@ -24,29 +26,44 @@ const Home = () => {
     }, [refreshCounter, currentPage]);
 
     const refreshPosts = () => {
-        console.log("refreshPosts chiamata, incremento contatore");
         setRefreshCounter(prev => {
-            console.log("Contatore incrementato da", prev, "a", prev + 1);
             return prev + 1;
         });
     };
 
     return (
         <Container>
-            <div className='d-flex flex-column align-items-center'>
-                <Col md={7} className='mt-4 allCard '>
-                    {user && <ModalCreatePost updatePost={refreshPosts} />}
-                    {Array.isArray(posts) && posts.map(post => (
-                        <PostCard 
-                        key={post._id}
-                        post={post} 
-                        refreshPosts={refreshPosts} />
-                    ))}
+            {user && <ModalCreatePost updatePost={refreshPosts} />}
+            
+            {/* Rimuovi flex-column dalla Row per avere colonne affiancate */}
+            <Row>
+                {/* Prima colonna per i post (con scroll verticale) */}
+                <Col md={9} className='mt-4'>
+                    <div className="d-flex flex-column align-items-center">
+                        {/* I post sono impilati verticalmente all'interno della colonna */}
+                        {Array.isArray(posts) && posts.map(post => (
+                            <PostCard 
+                                key={post._id}
+                                post={post} 
+                                refreshPosts={refreshPosts}
+                                className="mb-3 w-100"
+                            />
+                        ))}
+                    </div>
                 </Col>
-            </div>
+                
+                {/* Seconda colonna per gli utenti suggeriti */}
+                {user && (
+                <Col md={3} className='mt-4'>
+                    <SuggestedUsers id={user._id}/>
+                </Col>
+                )}
+            </Row>
+            
+            {/* Paginazione */}
             {totalPages > 1 && (
                 <div className="d-flex justify-content-center mt-4">
-                    <Pagination className='d-flex justify-content-center mt-4'>
+                    <Pagination>
                         <Pagination.Prev
                             disabled={currentPage === 1}
                             onClick={() => setCurrentPage(prev => Math.min(prev - 1, 1))}

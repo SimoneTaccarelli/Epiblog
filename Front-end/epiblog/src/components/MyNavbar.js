@@ -8,7 +8,7 @@ import Image from 'react-bootstrap/Image';
 
 function MyNavbar() {
   const { user, logout } = useAuth();
-  console.log('userNav',user );
+  console.log('userNav', user);
 
   const defaultImg = `https://ui-avatars.com/api/?background=8c00ff&color=fff&name=${user?.firstName}+${user?.lastName}`;
 
@@ -18,11 +18,11 @@ function MyNavbar() {
         <Navbar.Brand href="#">EpiBlog</Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
-          <Nav className="me-auto my-2 my-lg-0" navbarScroll>
-            <Link to="/" className="nav-link">Home</Link>
-          </Nav>
-          {user  ? (
+          {user ? (
             <>
+              <Nav className="me-auto my-2 my-lg-0" navbarScroll>
+                <Link to="/" className="nav-link">Home</Link>
+              </Nav>
               <NavDropdown
                 className="ms-auto"
                 id="nav-dropdown"
@@ -42,15 +42,16 @@ function MyNavbar() {
                 }
                 data-bs-theme="light"
               >
-                <Link to="/MyProfile" 
-                className="dropdown-item">My Profile</Link>
-                <NavDropdown.Item href="#/action-3">Something else</NavDropdown.Item>
+                <Link to="/MyProfile"
+                  className="dropdown-item">My Profile</Link>
+                <Link to="/Settings"
+                  className='dropdown-item'>Settings</Link>
                 <NavDropdown.Divider />
-                <Link to="/" onClick={logout} className="dropdown-item">Logout</Link>
+                <Link to="/login" onClick={logout} className="dropdown-item">Logout</Link>
               </NavDropdown>
             </>
           ) : (
-            <Link to="/login" className="btn btn-link text-center">Login</Link>
+            <Link to="/login" className="login-btn text-center">Login</Link>
           )}
         </Navbar.Collapse>
       </Container>

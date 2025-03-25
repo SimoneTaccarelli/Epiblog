@@ -1,6 +1,8 @@
 import { createContext, useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
+
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -16,6 +18,8 @@ export const AuthProvider = ({ children }) => {
     // Recupera il token memorizzato nel localStorage
     return localStorage.getItem('token');
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Aggiorna il localStorage con i dati dell'utente
@@ -43,6 +47,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    navigate('/login');
   };
 
   const updateUser = (newUserData) => {

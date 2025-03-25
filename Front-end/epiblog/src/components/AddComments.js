@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import Comments from "./Comments";
+import { API_URL } from "../config/config";
 
 const AddComments = ({ postId }) => {
     const { user } = useAuth();
@@ -13,7 +14,7 @@ const AddComments = ({ postId }) => {
 
     const fetchComments = async () => {
         try {
-            const response = await axios.get(`http://localhost:4000/comments/post/${postId}`);
+            const response = await axios.get(`${API_URL}/comments/post/${postId}`);
             if (Array.isArray(response.data)) {
                 setComments(response.data);
             } else {
@@ -44,7 +45,7 @@ const AddComments = ({ postId }) => {
         };
         console.log(newComment);
         try {
-            const response = await axios.post('http://localhost:4000/comments', newComment);
+            const response = await axios.post(`${API_URL}/comments`, newComment);
             setComments([response.data, ...comments]);
             setCommentText('');
         } catch (error) {
@@ -62,7 +63,6 @@ const AddComments = ({ postId }) => {
         <div>
             {user ? (
                 <>
-                <h5 className="mx-3 ">Comments</h5>
                 <Comments comments={comments} reciveDeleteId={reciveDeleteId}  />
                     <Form onSubmit={handleSubmit} className="comment-form">
                         <Form.Group>
