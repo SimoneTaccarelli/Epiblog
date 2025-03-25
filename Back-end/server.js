@@ -56,7 +56,7 @@ server.use("/comments", commentrouter);
 server.use("/auth", authRouter);
 
 // listen to server
-server.listen(4000, async () => {
+server.listen(`${process.env.PORT}`, async () => {
     console.log("Server is running on port 4000");
     await open (`${process.env.BACKEND_URL}`);
 });
