@@ -3,7 +3,8 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from '../models/Users.js';
 import bcrypt from 'bcrypt';
-import mailer from '../helper/mailer.js';   
+import mailer from '../helper/mailer.js';
+import dotenv from 'dotenv';   
 
 passport.serializeUser((user, done) => {
     done(null, user.id);
@@ -47,7 +48,7 @@ passport.use(new LocalStrategy(
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:4000/auth/login/google-callback"
+    callbackURL: `${process.env.BACKEND_URL}/auth/login/google-callback`
 }, async (accessToken, refreshToken, profile, done) => {
     const newUser = {
         googleId: profile.id,
