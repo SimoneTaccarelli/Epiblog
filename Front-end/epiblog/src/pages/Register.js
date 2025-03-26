@@ -3,6 +3,7 @@ import { Form, Button, Card, Row, Col, Container } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { API_URL } from "../config/config";
 
 const Register = () => {
     const [user, setUser] = useState({
@@ -38,7 +39,7 @@ const Register = () => {
         
 
         try {
-            const response = await axios.post("http://localhost:4000/auth/register", newUser);
+            const response = await axios.post(`${API_URL}/auth/register`, newUser);
             const {user , token } = response.data
          
             login(user , token ); // Usa i dati della risposta per il login
