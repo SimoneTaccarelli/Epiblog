@@ -16,7 +16,7 @@ function ModalEliminatetAccount() {
   const navigate = useNavigate();
   
   // Controlla se l'utente si è autenticato tramite Google
-  const isGoogleUser = user?.provider === 'google' || user?.googleId;
+  const isGoogleUser = Boolean(user?.googleId);
 
   const handleChange = (e) => {
     setPassword(e.target.value);
