@@ -9,6 +9,7 @@ import MyNavbar from "./MyNavbar";
 import { Container } from "react-bootstrap";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function AppContent() {
     const { user } = useAuth();
