@@ -7,7 +7,7 @@ import Settings from "../pages/Settings";
 import PostDetails from "../components/PostDetails";
 import MyNavbar from "./MyNavbar";
 import { Container } from "react-bootstrap";
-import { BrowserRouter as  Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
