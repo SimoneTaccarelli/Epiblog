@@ -4,7 +4,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import User from '../models/Users.js';
 import bcrypt from 'bcrypt';
 import mailer from '../helper/mailer.js';
-import dotenv from 'dotenv';   
+
 
 passport.serializeUser((user, done) => {
     done(null, user.id);

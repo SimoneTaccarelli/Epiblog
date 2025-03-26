@@ -67,9 +67,8 @@ const Login = () => {
         }
     };
 
-        const handleGoogleLogin = async () => {
-        window.location.href = API_URL+"/auth/login/google";
-
+    const handleGoogleLogin = async () => {
+        window.location.href = `${API_URL}/auth/login/google`;
     };
 
     return (
