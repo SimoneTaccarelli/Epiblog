@@ -18,7 +18,6 @@ function AppContent() {
         <>
             <MyNavbar />
             <Container>
-                <Router>
                     <Routes>
                         <Route path="/register" element={<Register />} />
                         <Route path="/login" element={<Login />} />
@@ -34,7 +33,6 @@ function AppContent() {
                             <Route path="/login" element={<Login />} />
                         )}
                     </Routes>
-                </Router>
             </Container>
         </>
     );
