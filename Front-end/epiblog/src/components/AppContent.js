@@ -7,7 +7,7 @@ import Settings from "../pages/Settings";
 import PostDetails from "../components/PostDetails";
 import MyNavbar from "./MyNavbar";
 import { Container } from "react-bootstrap";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as  Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -19,6 +19,7 @@ function AppContent() {
             <MyNavbar />
             <Container>
                     <Routes>
+                        <Route path="/" element={user ? <Home /> : <Navigate to="/login" replace />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/login" element={<Login />} />
                         {user ? (
