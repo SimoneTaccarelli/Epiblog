@@ -14,76 +14,79 @@ function ModalEliminatetAccount() {
   const handleShow = () => setShow(true);
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-
-
-  const handleChange = (e) => {
-    setPassword(e.target.value);
-  };
+  
+  // Controlla se l'utente si è autenticato tramite Google
+  const isGoogleUser = user?.provider === 'google' || user?.googleId;
 
   const handleDelete = async (e) => {
     e.preventDefault();
-
-    const passwordData = {
-      password : password,
-    };
+    
     try {
-      const res = await axios.delete(`${API_URL}/auth/${user._id}`, {
-        data: { password },
-      });
+      // Chiamata API diversa a seconda del tipo di utente
+      let res;
+      if (isGoogleUser) {
+        res = await axios.delete(`${API_URL}/auth/google/${user._id}`);
+      } else {
+        res = await axios.delete(`${API_URL}/auth/${user._id}`, {
+          data: { password }
+        });
+      }
+      
       alert(res.data.message);
       logout();
-      navigate('Login /');
+      navigate('/login');
     }
     catch (error) {
-      alert(error.response.data.message);
+      alert(error.response?.data?.message || 'Errore durante l\'eliminazione dell\'account');
     }
-  }
+  };
 
+  return (
+    <>
+      <Button variant="Link" onClick={handleShow} className="settingsButton">
+        <i className="bi bi-person-fill-x"></i>Elimina Account
+      </Button>
 
+      <Modal show={show} onHide={handleClose} backdrop="static">
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {isGoogleUser 
+              ? 'Conferma eliminazione account Google' 
+              : 'Inserisci la password per eliminare il tuo account'}
+          </Modal.Title>
+        </Modal.Header>
+        
+        <Form onSubmit={handleDelete}>
+          <Modal.Body>
+            {isGoogleUser ? (
+              <p>Sei sicuro di voler eliminare il tuo account Google? Questa azione è irreversibile.</p>
+            ) : (
+              <Form.Group className="mb-3" controlId="formBasicPassword">
+                <Form.Label>Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Inserisci la tua password"
+                  name="password"
+                  value={password}
+                  onChange={handleChange}
+                  required
+                />
+              </Form.Group>
+            )}
+          </Modal.Body>
+          
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Annulla
+            </Button>
+            <Button variant="danger" type="submit">
+              {isGoogleUser ? 'Conferma eliminazione' : 'Elimina account'}
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+    </>
+  );
+}
 
-
-    return (
-      <>
-        <Button
-          variant="Link"
-          onClick={handleShow}
-          className="settingsButton">
-          <i class="bi bi-person-fill-x"></i>Delet Account
-        </Button>
-
-        <Modal
-          show={show}
-          onHide={handleClose}
-          backdrop="static"
-          keyboard={false}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>insert the password to delet your account</Modal.Title>
-          </Modal.Header>
-          <Form
-            onSubmit={handleDelete}>
-            <Modal.Body>
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-                            <Form.Label>Old Password</Form.Label>
-                            <Form.Control
-                                type="password"
-                                placeholder="password"
-                                name="password"
-                                value={password.oldPassword}
-                                onChange={handleChange}
-                            />
-                        </Form.Group>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleClose}>
-                Close
-              </Button>
-              <Button variant="primary" type="submit">Delet account</Button>
-            </Modal.Footer>
-          </Form>
-        </Modal>
-      </>
-    );
-  }
-
-  export default ModalEliminatetAccount;
+export default ModalEliminatetAccount;

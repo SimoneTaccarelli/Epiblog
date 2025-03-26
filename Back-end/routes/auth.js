@@ -247,4 +247,29 @@ router.get('/suggested/:usersId', async (req, res) => {
   }
 });
 
+//rotta per eliminare account Google
+router.delete('/google/:userId', async (req, res)=>{
+  try{
+    const {userId} = req.params;
+
+    //trova l'utente e verifica che sia un utente google
+    const user = await User.findById(userId);
+    if(!user){
+      return res.status(404).json({message: 'User not found'});
+    }
+
+    //verifica che sia un tente google
+    if(!user.googleId){
+      return res.status(400).json({message: 'User is not a google user'});
+    }
+
+    //elinimazione dell'utente
+    await User.findByIdAndDelete(userId);
+    res.status(200).json({message: 'User deleted successfully'});
+  }
+  catch(error){
+    res.status(500).json({message: error.message});
+  }
+})
+
 export default router;
