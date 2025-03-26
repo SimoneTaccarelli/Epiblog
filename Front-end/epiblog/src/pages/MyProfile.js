@@ -5,6 +5,7 @@ import { Card, Row, Container, Spinner, Alert, Pagination, Col } from "react-boo
 import { Link } from 'react-router-dom';
 import '../Style/PP.css'; // Importa il file CSS
 import AddComments from "../components/AddComments";
+import { API_URL } from "../config/config";
 
 function MyProfile() {
     const { user } = useAuth();
@@ -20,7 +21,7 @@ function MyProfile() {
         const fetchPosts = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:4000/posts?author=${user._id}&page=${currentPage}&limit=5`);
+                const response = await axios.get(`${API_URL}/posts?author=${user._id}&page=${currentPage}&limit=5`);
                 setTotalPages(response.data.total);
                 setPosts(response.data.posts);
                 setLoading(false);

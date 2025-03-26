@@ -6,6 +6,7 @@ import { Container, Form, Button } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import MyProfile from './MyProfile';
+import { API_URL } from '../config/config';
 
 function ModifyUser() {
     const { user, updateUser } = useAuth();
@@ -57,7 +58,7 @@ function ModifyUser() {
 
         setLoading(true);
         try {
-            const response = await axios.put(`http://localhost:4000/auth/${user._id}`, newInfoUser, {
+            const response = await axios.put(`${API_URL}/auth/${user._id}`, newInfoUser, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
