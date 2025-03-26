@@ -18,6 +18,10 @@ function ModalEliminatetAccount() {
   // Controlla se l'utente si è autenticato tramite Google
   const isGoogleUser = user?.provider === 'google' || user?.googleId;
 
+  const handleChange = (e) => {
+    setPassword(e.target.value);
+  };
+
   const handleDelete = async (e) => {
     e.preventDefault();
     
