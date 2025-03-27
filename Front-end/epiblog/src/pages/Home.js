@@ -54,7 +54,7 @@ const Home = () => {
                 
                 {/* Seconda colonna per gli utenti suggeriti */}
                 {user && (
-                <Col md={3} className='mt-4 d-none d-sm-block'>
+                <Col md={3} className='mt-4 d-none d-md-block'>
                     <SuggestedUsers id={user._id}/>
                 </Col>
                 )}

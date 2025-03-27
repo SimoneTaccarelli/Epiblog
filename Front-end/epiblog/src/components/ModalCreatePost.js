@@ -100,7 +100,7 @@ function ModalCreatePost({ updatePost }) {
             {/* Pulsante per aprire il modal */}
             <div
                 onClick={handleShow}
-                className="form-control create-post-form text-muted d-flex align-items-center "
+                className="form-control create-post-form text-muted d-flex align-items-center mt-5"
                 style={{ cursor: "pointer" }}>
                 Add new post
             </div>
