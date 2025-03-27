@@ -88,10 +88,18 @@
     border: none;
 }
 
+
+
 .create-post-form{
-    width: 556px;
+    width: 400px;
     justify-self: center;
     border: 0.5px solid #080707;
+}
+
+@media (max-width: 576px){
+    .create-post-form{  
+        width: 339px;
+    }
 }
 
 .settingButton {
@@ -108,7 +116,6 @@
     text-decoration: none;
     padding: 6px;
     background-color: transparent;
-    margin-left: 155px;
     border-radius: 9%;
     border: 1px solid rgb(171, 170, 170);
 }
