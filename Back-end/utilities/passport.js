@@ -29,12 +29,12 @@ passport.use(new LocalStrategy(
         try {
             const user = await User.findOne({ email });
             if (!user) {
-                return done(null, false, { message: 'Incorrect email.' });
+                return done(null, false, { message: 'Incorrect credentials' });
             }
 
             const passwordMatch = await bcrypt.compare(password, user.password);
             if (!passwordMatch) {
-                return done(null, false, { message: 'Incorrect password.' });
+                return done(null, false, { message: 'Incorrect credentials' });
             }
 
             return done(null, user);

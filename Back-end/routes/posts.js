@@ -78,7 +78,21 @@ router.post("/", upload.single('cover'),  async (req, res) => {
 //delet post
 router.delete("/:postId", async (req, res) => {
   try {
-    const post = await Posts.findByIdAndDelete(req.params.postId);
+    const userId= req.user._id;
+    const userRole = req.user.role; 
+    const postId = req.params.postId;
+
+    const post = await Posts.findById(postId);
+
+    if(!post){
+      return res.status(404).json({message: "Post not found"});
+    }
+
+    if (post.author.toString() !== userId && userRole !== "admin") {
+      return res.status(401).json({ message: "You are not authorized to delete this post" });
+    }
+    await Posts.findByIdAndDelete(postId);
+
     res.json(201);
   } catch (error) {
 
