@@ -5,9 +5,11 @@ import ModalModifyPost from './ModalModifyPost';
 import AddComments from './AddComments';
 import { Link } from 'react-router-dom';
 import { API_URL } from '../config/config';
+import { useNavigate } from 'react-router-dom';
 
 const PostCard = ({ post , refreshPosts }) => {
     const { user } = useAuth();
+    const navigate = useNavigate();
 
     const defaultImg = `https://ui-avatars.com/api/?background=8c00ff&color=fff&name=${post.author?.firstName}+${post.author?.lastName}`;
 
@@ -25,11 +27,16 @@ const PostCard = ({ post , refreshPosts }) => {
             console.error(error);
         }
     };
+
+    const handleClickDetails = () => {
+        navigate(`/post/${post._id}`);
+    }
+
     
 
     return (
         <>
-        <Card key={post._id} className="my-4 w-75 post-card">
+        <Card key={post._id} className="my-4 w-75 post-card" onClick={handleClickDetails}>
             <Card.Header className="d-flex justify-content-between p-0">
                 <Row className="align-items-center">
                     <div className="col-auto">
