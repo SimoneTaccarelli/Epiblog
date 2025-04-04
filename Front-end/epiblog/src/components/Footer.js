@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaHeart } from 'react-icons/fa';
-import './Footer.css'; // Crea questo file per stili aggiuntivi
+import '../Style/Footer.css'; // Crea questo file per stili aggiuntivi
 
 const Footer = () => {
   return (
@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="footer-container">
         <div className="footer-section">
           <h3>Epiblog</h3>
-          <p>Il tuo spazio per condividere storie, idee e passioni.</p>
+          <p>Your space to share stories, ideas and passions.</p>
         </div>
         
         <div className="footer-section">
@@ -17,8 +17,8 @@ const Footer = () => {
           <ul>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/blog">Blog</Link></li>
-            <li><Link to="/about">Chi Siamo</Link></li>
-            <li><Link to="/contact">Contatti</Link></li>
+            <li><Link to="/about">Who we are</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
           </ul>
         </div>
         
@@ -35,7 +35,7 @@ const Footer = () => {
       
       <div className="footer-bottom">
         <p>© {new Date().getFullYear()} Epiblog. Tutti i diritti riservati.</p>
-        <p>Realizzato con <FaHeart className="heart-icon" /> in Italia</p>
+        <p>Realizzato con <FaHeart className="heart-icon" /> in Italy</p>
       </div>
     </footer>
   );
