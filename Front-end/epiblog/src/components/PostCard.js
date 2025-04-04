@@ -1,38 +1,57 @@
-import React from 'react';
-import { Button, Card, Row } from "react-bootstrap";
+import React, { useState } from 'react';
+import { Button, Card, Row, Modal } from "react-bootstrap";
 import { useAuth } from '../contexts/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { API_URL } from '../config/config';
 import ModalModifyPost from './ModalModifyPost';
 import AddComments from './AddComments';
-import { Link } from 'react-router-dom';
-import { API_URL } from '../config/config';
-import { useNavigate } from 'react-router-dom';
 
 const PostCard = ({ post, refreshPosts }) => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const defaultImg = `https://ui-avatars.com/api/?background=8c00ff&color=fff&name=${post.author?.firstName}+${post.author?.lastName}`;
 
+    const confirmDelete = (e) => {
+        e.stopPropagation();
+        setShowConfirmModal(true);
+    };
+
     const deletePost = async () => {
         try {
+            setIsDeleting(true);
+            const token = localStorage.getItem('token');
+            
             const response = await fetch(`${API_URL}/posts/${post._id}`, {
                 method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
+            
             if (response.ok) {
-                refreshPosts()
+                console.log('Post deleted successfully');
+                setShowConfirmModal(false);
+                refreshPosts();
             } else {
-                console.error('Failed to delete post');
+                const errorData = await response.json();
+                console.error('Failed to delete post:', errorData);
+                alert('Errore durante l\'eliminazione del post: ' + (errorData.message || 'Errore sconosciuto'));
             }
         } catch (error) {
-            console.error(error);
+            console.error('Error during delete request:', error);
+            alert('Si è verificato un errore durante l\'eliminazione del post');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
     const handleClickDetails = () => {
         navigate(`/post/${post._id}`);
     }
-
-
 
     return (
         <>
@@ -64,28 +83,52 @@ const PostCard = ({ post, refreshPosts }) => {
                     >
                     </div>
                 </div>
-                    <Card.Body>
-                        {user && user._id === post.author._id ? (
-                            <div className="d-flex justify-content-between">
-                                <div>
-                                    <span className="badge bg-secondary me-2">{post.category}</span>
-                                </div>
-                                <div>
-                                    <Button variant='link deletPostBtn' onClick={deletePost}>Delete Post</Button>
-                                    <ModalModifyPost id={post._id} />
-                                </div>
+                <Card.Body>
+                    {user && user._id === post.author._id ? (
+                        <div className="d-flex justify-content-between">
+                            <div>
+                                <span className="badge bg-secondary me-2">{post.category}</span>
                             </div>
-                        ) : (
-                            <Card.Subtitle className="mb-2 text-muted">{post.category}</Card.Subtitle>
-                        )}
+                            <div>
+                                <Button 
+                                    variant='link' 
+                                    className="deletePostBtn" 
+                                    onClick={confirmDelete}
+                                >
+                                    Delete Post
+                                </Button>
+                                <ModalModifyPost id={post._id} />
+                            </div>
+                        </div>
+                    ) : (
+                        <Card.Subtitle className="mb-2 text-muted">{post.category}</Card.Subtitle>
+                    )}
 
-                        <Card.Text>{post.description}</Card.Text>
-                        <small className="text-muted">Read time: {post.readTime.value} {post.readTime.unit}</small>
-                    </Card.Body>
+                    <Card.Text>{post.description}</Card.Text>
+                    <small className="text-muted">Read time: {post.readTime.value} {post.readTime.unit}</small>
+                </Card.Body>
                 
                 <AddComments postId={post._id} />
-            </Card >
+            </Card>
 
+            <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Conferma eliminazione</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Sei sicuro di voler eliminare questo post? Questa azione non può essere annullata.</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowConfirmModal(false)}>
+                        Annulla
+                    </Button>
+                    <Button 
+                        variant="danger" 
+                        onClick={deletePost}
+                        disabled={isDeleting}
+                    >
+                        {isDeleting ? 'Eliminazione...' : 'Elimina'}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 }
