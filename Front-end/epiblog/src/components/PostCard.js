@@ -23,6 +23,10 @@ const PostCard = ({ post, refreshPosts }) => {
     };
 
     const deletePost = async () => {
+        // Aggiungi questi log
+        const token = localStorage.getItem('token');
+        console.log("Token prima dell'eliminazione:", token ? `${token.substring(0, 10)}...` : "Nessun token");
+        
         // Verifica che post._id esista
         if (!post || !post._id) {
             console.error("Post ID not found");
@@ -32,7 +36,6 @@ const PostCard = ({ post, refreshPosts }) => {
         
         try {
             setIsDeleting(true);
-            const token = localStorage.getItem('token');
             
             // Log per debug
             console.log("Tentativo di eliminare post:", post._id);
