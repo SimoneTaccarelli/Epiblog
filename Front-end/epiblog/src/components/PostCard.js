@@ -7,7 +7,8 @@ import ModalModifyPost from './ModalModifyPost';
 import AddComments from './AddComments';
 
 const PostCard = ({ post, refreshPosts }) => {
-    const { user } = useAuth();
+    // Estrai il token direttamente dal context
+    const { user, token } = useAuth();
     const navigate = useNavigate();
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -23,9 +24,11 @@ const PostCard = ({ post, refreshPosts }) => {
     };
 
     const deletePost = async () => {
-        // Aggiungi questi log
-        const token = localStorage.getItem('token');
-        console.log("Token prima dell'eliminazione:", token ? `${token.substring(0, 10)}...` : "Nessun token");
+        // Usa il token dal context invece che da localStorage
+        if (!token) {
+            alert("Non sei autenticato. Effettua nuovamente il login.");
+            return;
+        }
         
         // Verifica che post._id esista
         if (!post || !post._id) {
@@ -49,8 +52,13 @@ const PostCard = ({ post, refreshPosts }) => {
                 }
             });
             
-            const data = await response.json();
-            console.log("Risposta dal server:", data);
+            // Tentativo di ottenere JSON dalla risposta
+            let data;
+            try {
+                data = await response.json();
+            } catch (e) {
+                console.log("La risposta non contiene JSON valido");
+            }
             
             if (response.ok) {
                 console.log('Post deleted successfully');
@@ -58,7 +66,7 @@ const PostCard = ({ post, refreshPosts }) => {
                 refreshPosts();
             } else {
                 console.error('Failed to delete post:', data);
-                alert('Errore durante l\'eliminazione del post: ' + (data.message || 'Errore sconosciuto'));
+                alert('Errore durante l\'eliminazione del post: ' + (data?.message || 'Errore sconosciuto'));
             }
         } catch (error) {
             console.error('Error during delete request:', error);
