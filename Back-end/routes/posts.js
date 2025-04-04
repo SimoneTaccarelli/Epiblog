@@ -78,24 +78,31 @@ router.post("/", upload.single('cover'),  async (req, res) => {
 //delet post
 router.delete("/:postId", async (req, res) => {
   try {
-    const userId= req.user._id;
-    const userRole = req.user.role; 
+    // Verifica che l'utente sia autenticato
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: "Non sei autenticato" });
+    }
+
+    const userId = req.user._id;
     const postId = req.params.postId;
 
     const post = await Posts.findById(postId);
 
-    if(!post){
-      return res.status(404).json({message: "Post not found"});
+    if (!post) {
+      return res.status(404).json({ message: "Post non trovato" });
     }
 
-    if (post.author.toString() !== userId && userRole !== "admin") {
-      return res.status(401).json({ message: "You are not authorized to delete this post" });
+    // Converti l'ObjectId di MongoDB in stringa per un confronto corretto
+    if (post.author.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "Non sei autorizzato a eliminare questo post" });
     }
+
     await Posts.findByIdAndDelete(postId);
 
-    res.json(201);
+    // Restituisci lo status code corretto per successo
+    res.status(200).json({ message: "Post eliminato con successo" });
   } catch (error) {
-
+    console.error("Errore durante l'eliminazione del post:", error);
     res.status(500).json({ message: error.message });
   }
 });
