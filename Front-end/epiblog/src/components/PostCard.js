@@ -11,15 +11,25 @@ const PostCard = ({ post, refreshPosts }) => {
     const navigate = useNavigate();
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    
+    // Verifica che post esista per evitare errori
+    if (!post) return null;
 
-    const defaultImg = `https://ui-avatars.com/api/?background=8c00ff&color=fff&name=${post.author?.firstName}+${post.author?.lastName}`;
+    const defaultImg = `https://ui-avatars.com/api/?background=8c00ff&color=fff&name=${post.author?.firstName || 'User'}+${post.author?.lastName || ''}`;
 
     const confirmDelete = (e) => {
-        e.stopPropagation();
+        if (e) e.stopPropagation();
         setShowConfirmModal(true);
     };
 
     const deletePost = async () => {
+        // Verifica che post._id esista
+        if (!post || !post._id) {
+            console.error("Post ID not found");
+            alert("Impossibile eliminare il post: ID non trovato");
+            return;
+        }
+        
         try {
             setIsDeleting(true);
             const token = localStorage.getItem('token');
@@ -53,6 +63,9 @@ const PostCard = ({ post, refreshPosts }) => {
         navigate(`/post/${post._id}`);
     }
 
+    // Verifica se l'utente è l'autore del post in modo sicuro
+    const isAuthor = user && post.author && user._id === post.author._id;
+
     return (
         <>
             <Card key={post._id} className="my-4 w-75 post-card" >
@@ -69,25 +82,25 @@ const PostCard = ({ post, refreshPosts }) => {
                                 />
                             </div>
                             <div className="col">
-                                <h5>{post.author?.firstName} {post.author?.lastName}</h5>
+                                <h5>{post.author?.firstName || 'Utente'} {post.author?.lastName || ''}</h5>
                             </div>
                         </Row>
                     </Card.Header>
 
-                    <Link to={`/post/${post._id}`} className='link-postDetails my-3 mx-3'>{post.title}</Link>
+                    <Link to={`/post/${post._id}`} className='link-postDetails my-3 mx-3'>{post.title || 'Senza titolo'}</Link>
                     <div
                         className='post-cover'
                         style={{
-                            backgroundImage: `url(${post.cover})`
+                            backgroundImage: post.cover ? `url(${post.cover})` : 'none'
                         }}
                     >
                     </div>
                 </div>
                 <Card.Body>
-                    {user && user._id === post.author._id ? (
+                    {isAuthor ? (
                         <div className="d-flex justify-content-between">
                             <div>
-                                <span className="badge bg-secondary me-2">{post.category}</span>
+                                <span className="badge bg-secondary me-2">{post.category || 'Nessuna categoria'}</span>
                             </div>
                             <div>
                                 <Button 
@@ -101,11 +114,11 @@ const PostCard = ({ post, refreshPosts }) => {
                             </div>
                         </div>
                     ) : (
-                        <Card.Subtitle className="mb-2 text-muted">{post.category}</Card.Subtitle>
+                        <Card.Subtitle className="mb-2 text-muted">{post.category || 'Nessuna categoria'}</Card.Subtitle>
                     )}
 
-                    <Card.Text>{post.description}</Card.Text>
-                    <small className="text-muted">Read time: {post.readTime.value} {post.readTime.unit}</small>
+                    <Card.Text>{post.description || 'Nessuna descrizione'}</Card.Text>
+                    <small className="text-muted">Read time: {post.readTime?.value || '0'} {post.readTime?.unit || 'min'}</small>
                 </Card.Body>
                 
                 <AddComments postId={post._id} />
