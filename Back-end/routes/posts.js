@@ -1,7 +1,7 @@
 import e from "express";
 import Posts from "../models/Posts.js";
 import upload from "../utilities/cloudinary.js";
-import * as controller from "../controllers/post.controller.js";
+import { authMiddleware } from "../controllers/post.controller.js"; 
 
 const router = e.Router();
 
@@ -77,7 +77,7 @@ router.post("/", upload.single('cover'),  async (req, res) => {
 });
 
 //delet post
-router.delete("/:postId", controller.authMiddleware, async (req, res)=> {
+router.delete("/:postId", authMiddleware, async (req, res)=> {
   try {
     // Verifica che l'utente sia autenticato
     if (!req.user || !req.user._id) {
