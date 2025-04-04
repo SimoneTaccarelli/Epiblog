@@ -24,52 +24,56 @@ const PostCard = ({ post, refreshPosts }) => {
     };
 
     const deletePost = async () => {
-        // Usa il token dal context invece che da localStorage
-        if (!token) {
-            alert("Non sei autenticato. Effettua nuovamente il login.");
-            return;
-        }
-        
-        // Verifica che post._id esista
-        if (!post || !post._id) {
-            console.error("Post ID not found");
-            alert("Impossibile eliminare il post: ID non trovato");
-            return;
-        }
-        
         try {
             setIsDeleting(true);
             
-            // Log per debug
-            console.log("Tentativo di eliminare post:", post._id);
-            console.log("Token utilizzato:", token ? "Token presente" : "Token mancante");
+            // IMPORTANTE: Ottieni il token direttamente da localStorage per debug
+            const localToken = localStorage.getItem('token');
+            console.log("Token dal localStorage:", localToken ? `${localToken.substring(0, 20)}...` : "Mancante");
+            console.log("Token dal context:", token ? `${token.substring(0, 20)}...` : "Mancante");
+            
+            // Usa token dal localStorage se quello del context è mancante
+            const tokenToUse = token || localToken;
+            
+            if (!tokenToUse) {
+                alert("Token mancante. Effettua nuovamente il login.");
+                return;
+            }
             
             const response = await fetch(`${API_URL}/posts/${post._id}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${tokenToUse}`,
                     'Content-Type': 'application/json'
                 }
             });
             
-            // Tentativo di ottenere JSON dalla risposta
-            let data;
-            try {
+            // Controlla se la risposta contiene JSON
+            const contentType = response.headers.get('content-type');
+            let data = {};
+            
+            if (contentType && contentType.includes('application/json')) {
                 data = await response.json();
-            } catch (e) {
-                console.log("La risposta non contiene JSON valido");
+            } else {
+                console.log("Risposta non JSON:", await response.text());
             }
             
             if (response.ok) {
-                console.log('Post deleted successfully');
+                console.log('Post eliminato con successo');
                 setShowConfirmModal(false);
                 refreshPosts();
             } else {
-                console.error('Failed to delete post:', data);
-                alert('Errore durante l\'eliminazione del post: ' + (data?.message || 'Errore sconosciuto'));
+                console.error('Errore durante eliminazione:', response.status, data);
+                alert(`Errore ${response.status}: ${data.message || 'Errore sconosciuto'}`);
+                
+                // Se il token è scaduto, reindirizza al login
+                if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    navigate('/login');
+                }
             }
         } catch (error) {
-            console.error('Error during delete request:', error);
+            console.error('Errore nella richiesta:', error);
             alert('Si è verificato un errore durante l\'eliminazione del post');
         } finally {
             setIsDeleting(false);
