@@ -7,17 +7,17 @@ import ModalModifyPost from './ModalModifyPost';
 import AddComments from './AddComments';
 
 const PostCard = ({ post, refreshPosts }) => {
-    const { user, token } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     
-    // Verifica che post esista
+    // Verifica che il post esista
     if (!post) return null;
 
     const defaultImg = `https://ui-avatars.com/api/?background=8c00ff&color=fff&name=${post.author?.firstName || 'User'}+${post.author?.lastName || ''}`;
 
-    // Verifica se l'utente corrente è l'autore del post
+    // Verifica se l'utente è l'autore
     const isAuthor = user && post.author && user._id === post.author._id;
 
     const confirmDelete = (e) => {
@@ -25,38 +25,23 @@ const PostCard = ({ post, refreshPosts }) => {
         setShowConfirmModal(true);
     };
 
-    // Funzione per eliminare il post con autenticazione
+    // Funzione semplificata per eliminare il post
     const deletePost = async () => {
         try {
             setIsDeleting(true);
             
-            // Debug del token
-            console.log("Token usato:", token);
-            console.log("Lunghezza token:", token ? token.length : 0);
-            console.log("Struttura token (dovrebbe avere 2 punti):", 
-                        token ? token.split('.').length : 0);
-            
-            // Usa il token per l'autenticazione
+            // Chiamata API semplificata senza token
             const response = await fetch(`${API_URL}/posts/${post._id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+                method: 'DELETE'
             });
             
-            // Gestione della risposta
             if (response.ok) {
-                console.log('Post eliminato con successo');
                 setShowConfirmModal(false);
                 refreshPosts();
             } else {
-                const data = await response.json().catch(() => ({}));
-                console.error('Errore durante eliminazione:', response.status, data);
-                alert(`Errore durante l'eliminazione del post: ${data.message || response.status}`);
+                alert('Errore durante l\'eliminazione del post');
             }
         } catch (error) {
-            console.error('Errore nella richiesta:', error);
             alert('Si è verificato un errore durante l\'eliminazione del post');
         } finally {
             setIsDeleting(false);
