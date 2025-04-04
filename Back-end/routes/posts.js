@@ -77,13 +77,9 @@ router.post("/", upload.single('cover'),  async (req, res) => {
 });
 
 //delet post
-router.delete("/:postId", authMiddleware, async (req, res)=> {
+router.delete("/:postId", authMiddleware, async (req, res) => {
   try {
-    // Verifica che l'utente sia autenticato
-    if (!req.user || !req.user._id) {
-      return res.status(401).json({ message: "Non sei autenticato" });
-    }
-
+    // L'utente è già autenticato grazie al middleware
     const userId = req.user._id;
     const postId = req.params.postId;
 
@@ -99,8 +95,6 @@ router.delete("/:postId", authMiddleware, async (req, res)=> {
     }
 
     await Posts.findByIdAndDelete(postId);
-
-    // Restituisci lo status code corretto per successo
     res.status(200).json({ message: "Post eliminato con successo" });
   } catch (error) {
     console.error("Errore durante l'eliminazione del post:", error);

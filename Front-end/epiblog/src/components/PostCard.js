@@ -7,7 +7,7 @@ import ModalModifyPost from './ModalModifyPost';
 import AddComments from './AddComments';
 
 const PostCard = ({ post, refreshPosts }) => {
-    const { user } = useAuth();
+    const { user, token } = useAuth();
     const navigate = useNavigate();
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -17,19 +17,26 @@ const PostCard = ({ post, refreshPosts }) => {
 
     const defaultImg = `https://ui-avatars.com/api/?background=8c00ff&color=fff&name=${post.author?.firstName || 'User'}+${post.author?.lastName || ''}`;
 
+    // Verifica se l'utente corrente è l'autore del post
+    const isAuthor = user && post.author && user._id === post.author._id;
+
     const confirmDelete = (e) => {
         if (e) e.stopPropagation();
         setShowConfirmModal(true);
     };
 
-    // Funzione semplificata per eliminare il post
+    // Funzione per eliminare il post con autenticazione
     const deletePost = async () => {
         try {
             setIsDeleting(true);
             
-            // Richiesta DELETE semplificata - nessuna autenticazione richiesta
+            // Usa il token per l'autenticazione
             const response = await fetch(`${API_URL}/posts/${post._id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
             
             // Gestione della risposta
@@ -38,8 +45,9 @@ const PostCard = ({ post, refreshPosts }) => {
                 setShowConfirmModal(false);
                 refreshPosts();
             } else {
-                console.error('Errore durante eliminazione:', response.status);
-                alert('Errore durante l\'eliminazione del post');
+                const data = await response.json().catch(() => ({}));
+                console.error('Errore durante eliminazione:', response.status, data);
+                alert(`Errore durante l'eliminazione del post: ${data.message || response.status}`);
             }
         } catch (error) {
             console.error('Errore nella richiesta:', error);
@@ -53,9 +61,8 @@ const PostCard = ({ post, refreshPosts }) => {
         navigate(`/post/${post._id}`);
     }
 
-    // Mostriamo i controlli di modifica/eliminazione per tutti i post
-    // poiché il middleware ora permette tutte le operazioni
-    const showControls = true; // Oppure user e post.author sono presenti
+    // Mostra i controlli solo se l'utente è l'autore del post
+    const showControls = isAuthor; 
 
     return (
         <>
