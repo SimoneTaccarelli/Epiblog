@@ -10,6 +10,7 @@ import { Container } from "react-bootstrap";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Footer from "./Footer";
 
 function AppContent() {
     const { user } = useAuth();
@@ -34,6 +35,7 @@ function AppContent() {
                             <Route path="/login" element={<Login />} />
                         )}
                     </Routes>
+                <Footer />
             </Container>
         </>
     );
