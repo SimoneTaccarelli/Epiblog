@@ -30,6 +30,12 @@ const PostCard = ({ post, refreshPosts }) => {
         try {
             setIsDeleting(true);
             
+            // Debug del token
+            console.log("Token usato:", token);
+            console.log("Lunghezza token:", token ? token.length : 0);
+            console.log("Struttura token (dovrebbe avere 2 punti):", 
+                        token ? token.split('.').length : 0);
+            
             // Usa il token per l'autenticazione
             const response = await fetch(`${API_URL}/posts/${post._id}`, {
                 method: 'DELETE',

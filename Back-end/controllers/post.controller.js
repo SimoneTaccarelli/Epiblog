@@ -9,18 +9,25 @@ const JWT_SECRET = "your-secret-key"; // Rimuovi la variabile d'ambiente tempora
 export async function authMiddleware(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
+        console.log("Header Authorization:", authHeader); // Aggiungi per debug
         
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).json({ message: "Non sei autenticato" });
         }
         
         const token = authHeader.split(' ')[1];
+        console.log("Token estratto:", token ? token.substring(0, 20) + "..." : "null"); // Per debug
         
         if (!token) {
             return res.status(401).json({ message: "Token non fornito" });
         }
         
         try {
+            // Verifica che il token abbia il formato corretto di JWT
+            if (token.split('.').length !== 3) {
+                return res.status(401).json({ message: "Token malformato: non è un JWT valido" });
+            }
+            
             console.log("Verifico token con chiave:", JWT_SECRET);
             
             // Per il debug, decodifica senza verificare
