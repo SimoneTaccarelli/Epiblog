@@ -7,13 +7,12 @@ import ModalModifyPost from './ModalModifyPost';
 import AddComments from './AddComments';
 
 const PostCard = ({ post, refreshPosts }) => {
-    // Estrai il token direttamente dal context
-    const { user, token } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     
-    // Verifica che post esista per evitare errori
+    // Verifica che post esista
     if (!post) return null;
 
     const defaultImg = `https://ui-avatars.com/api/?background=8c00ff&color=fff&name=${post.author?.firstName || 'User'}+${post.author?.lastName || ''}`;
@@ -23,54 +22,24 @@ const PostCard = ({ post, refreshPosts }) => {
         setShowConfirmModal(true);
     };
 
+    // Funzione semplificata per eliminare il post
     const deletePost = async () => {
         try {
             setIsDeleting(true);
             
-            // IMPORTANTE: Ottieni il token direttamente da localStorage per debug
-            const localToken = localStorage.getItem('token');
-            console.log("Token dal localStorage:", localToken ? `${localToken.substring(0, 20)}...` : "Mancante");
-            console.log("Token dal context:", token ? `${token.substring(0, 20)}...` : "Mancante");
-            
-            // Usa token dal localStorage se quello del context è mancante
-            const tokenToUse = token || localToken;
-            
-            if (!tokenToUse) {
-                alert("Token mancante. Effettua nuovamente il login.");
-                return;
-            }
-            
+            // Richiesta DELETE semplificata - nessuna autenticazione richiesta
             const response = await fetch(`${API_URL}/posts/${post._id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${tokenToUse}`,
-                    'Content-Type': 'application/json'
-                }
+                method: 'DELETE'
             });
             
-            // Controlla se la risposta contiene JSON
-            const contentType = response.headers.get('content-type');
-            let data = {};
-            
-            if (contentType && contentType.includes('application/json')) {
-                data = await response.json();
-            } else {
-                console.log("Risposta non JSON:", await response.text());
-            }
-            
+            // Gestione della risposta
             if (response.ok) {
                 console.log('Post eliminato con successo');
                 setShowConfirmModal(false);
                 refreshPosts();
             } else {
-                console.error('Errore durante eliminazione:', response.status, data);
-                alert(`Errore ${response.status}: ${data.message || 'Errore sconosciuto'}`);
-                
-                // Se il token è scaduto, reindirizza al login
-                if (response.status === 401) {
-                    localStorage.removeItem('token');
-                    navigate('/login');
-                }
+                console.error('Errore durante eliminazione:', response.status);
+                alert('Errore durante l\'eliminazione del post');
             }
         } catch (error) {
             console.error('Errore nella richiesta:', error);
@@ -84,8 +53,9 @@ const PostCard = ({ post, refreshPosts }) => {
         navigate(`/post/${post._id}`);
     }
 
-    // Verifica se l'utente è l'autore del post in modo sicuro
-    const isAuthor = user && post.author && user._id === post.author._id;
+    // Mostriamo i controlli di modifica/eliminazione per tutti i post
+    // poiché il middleware ora permette tutte le operazioni
+    const showControls = true; // Oppure user e post.author sono presenti
 
     return (
         <>
@@ -118,23 +88,17 @@ const PostCard = ({ post, refreshPosts }) => {
                     </div>
                 </div>
                 <Card.Body>
-                    {isAuthor ? (
+                    {showControls ? (
                         <div className="d-flex justify-content-between">
                             <div>
                                 <span className="badge bg-secondary me-2">{post.category || 'Nessuna categoria'}</span>
                             </div>
                             <div>
-                                {/* Modifica del pulsante elimina per renderlo simile a Modifica */}
                                 <Button 
                                     variant="outline-danger"
                                     size="sm"
                                     onClick={confirmDelete}
                                     className="me-2"
-                                    style={{
-                                        borderRadius: '4px',
-                                        padding: '0.375rem 0.75rem',
-                                        fontSize: '0.875rem' 
-                                    }}
                                 >
                                     Elimina Post
                                 </Button>
