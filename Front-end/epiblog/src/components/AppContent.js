@@ -19,24 +19,26 @@ function AppContent() {
         <>
             <MyNavbar />
             <Container>
-                    <Routes>
-                        <Route path="/" element={user ? <Home /> : <Navigate to="/login" replace />} />
-                        <Route path="/register" element={<Register />} />
+                <Routes>
+                    <Route path="/" element={user ? <Home /> : <Navigate to="/login" replace />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/login" element={<Login />} />
+                    {user ? (
+                        <>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/MyProfile" element={<MyProfile />} />
+                            <Route path="/ModifyUser" element={<ModifyUser />} />
+                            <Route path="/settings" element={<Settings />} />
+                            <Route path="/post/:postId" element={<PostDetails />} />
+                        </>
+                    ) : (
                         <Route path="/login" element={<Login />} />
-                        {user ? (
-                            <>
-                                <Route path="/" element={<Home />} />
-                                <Route path="/MyProfile" element={<MyProfile />} />
-                                <Route path="/ModifyUser" element={<ModifyUser />} />
-                                <Route path="/settings" element={<Settings />} />
-                                <Route path="/post/:postId" element={<PostDetails />} />
-                            </>
-                        ) : (
-                            <Route path="/login" element={<Login />} />
-                        )}
-                    </Routes>
-                <Footer />
+                    )}
+                </Routes>
             </Container>
+            <div className="container-fluid p-0">
+                <Footer />
+            </div>
         </>
     );
 }
