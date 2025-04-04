@@ -1,7 +1,7 @@
 import e from "express";
 import Posts from "../models/Posts.js";
 import upload from "../utilities/cloudinary.js";
-import * as controller from "../controllers/postController.js";
+import * as controller from "../controllers/post.controller.js";
 
 const router = e.Router();
 
